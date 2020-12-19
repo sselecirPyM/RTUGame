@@ -1,0 +1,547 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{afda519e-8789-4d65-aabd-d951ac8f328f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Graphics">
+      <UniqueIdentifier>{f733ae17-d0fb-408e-98b2-a3fe1190132f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Common">
+      <UniqueIdentifier>{4c6c12c2-8459-48c5-b7a9-f8b5097f29ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{51c43d74-c158-4eea-b020-5b3713f7e656}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Voxel">
+      <UniqueIdentifier>{24f2fde5-ab96-42fc-aa3a-c910e71b9d37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Client">
+      <UniqueIdentifier>{47bf94da-709d-4f52-8767-3219db583473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures">
+      <UniqueIdentifier>{67e3d0e7-1186-4e1e-8833-3cba5a135f09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Graphics\Advanced">
+      <UniqueIdentifier>{c26d73c5-ee78-4a80-aaec-8a94e5db1677}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Math">
+      <UniqueIdentifier>{e84ba592-d8a0-4fdc-bef0-b673bd47ff86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\RenderPipeline">
+      <UniqueIdentifier>{78b5e718-93da-490e-b792-5ecb72861af8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Graphics\DirectX12">
+      <UniqueIdentifier>{89506608-5f6b-4c46-bd0d-bd87397cfdee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compression">
+      <UniqueIdentifier>{60d4903b-c965-43d0-960a-a0098f2d5dcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Net">
+      <UniqueIdentifier>{d75faef9-c29e-4b4e-ad8b-dda526b9a575}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Physics">
+      <UniqueIdentifier>{338aecc5-40b2-4730-8c54-c64d856e0b63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Physics\PhysX">
+      <UniqueIdentifier>{ce25a8ad-f6af-4e55-991c-87d365737f47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Graphics\DirectX11">
+      <UniqueIdentifier>{7074bf19-cb6f-44fb-b3d3-434a7cfb4ace}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Graphics\Vulkan">
+      <UniqueIdentifier>{82d1be49-2b0d-49e0-9264-7e5e4e78780c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Win32Application.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IAppCore.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AppCore.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="src\Graphics\RTUTexture2DLoader.cpp">
+      <Filter>src\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\RTUMeshLoader.cpp">
+      <Filter>src\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\RTUPipelineStateLoader.cpp">
+      <Filter>src\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client\ClientPlayer.cpp">
+      <Filter>src\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client\UserInput.cpp">
+      <Filter>src\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Voxel\Chunk16.cpp">
+      <Filter>src\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client\ClientChunk.cpp">
+      <Filter>src\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client\Lightings.cpp">
+      <Filter>src\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client\ClientContext.cpp">
+      <Filter>src\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Advanced\RTUCBufferGroup.cpp">
+      <Filter>src\Graphics\Advanced</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client\ChunkScene.cpp">
+      <Filter>src\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\Ray.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderPipeline\ClientToRenderPipeline.cpp">
+      <Filter>src\RenderPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderPipeline\DeferredRenderPipeline.cpp">
+      <Filter>src\RenderPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderPipeline\RenderPipelineContext.cpp">
+      <Filter>src\RenderPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client\NetToClient.cpp">
+      <Filter>src\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Compression\lz4.c">
+      <Filter>src\Compression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Compression\lz4hc.c">
+      <Filter>src\Compression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Net\NetDataWrapLayout.cpp">
+      <Filter>src\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Net\NetContext.cpp">
+      <Filter>src\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Net\NetBlock.cpp">
+      <Filter>src\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Compression\xxhash.c">
+      <Filter>src\Compression</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderPipeline\RendererCore.cpp">
+      <Filter>src\RenderPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\RTUGraphicsInterfaces.cpp">
+      <Filter>src\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12GraphicsFactory.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12GraphicsContext.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12SBuffer.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12CBuffer.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12Mesh.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12PipelineState.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12RootSignature.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12Texture2D.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12RenderTexture2D.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11GraphicsFactory.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11CBuffer.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11SBuffer.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11RenderTexture2D.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11Texture2D.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11GraphicsContext.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11Mesh.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11PipelineState.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11RootSignature.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\PhysX\RTUPXFactory.cpp">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\PhysX\RTUPXScene.cpp">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\PhysX\RTUPXDevice.cpp">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\PhysX\RTUPXRigidBody.cpp">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\PhysX\RTUPXController.cpp">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\IncreasePerformance.cpp">
+      <Filter>src\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderPipeline\RenderPipelineResources.cpp">
+      <Filter>src\RenderPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\PhysX\RTUPXStatic.cpp">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\FrustumCull.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client\ChunkNode.cpp">
+      <Filter>src\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\RTUPSODesc.cpp">
+      <Filter>src\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11GraphicsDevice.cpp">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12GraphicsDevice.cpp">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKGraphicsDevice.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKGraphicsFactory.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKTexture2D.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKCBuffer.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKSBuffer.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKRootSignature.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKRenderTexture2D.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKGraphicsContext.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKMesh.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKPipelineState.cpp">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Win32Application.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IAppCore.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AppCore.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="src\DXUtil.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\RTU_STATES.h">
+      <Filter>src\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\RTUTexture2DLoader.h">
+      <Filter>src\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\RTUMeshLoader.h">
+      <Filter>src\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\RTUCommon.h">
+      <Filter>src\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\RTUPipelineStateLoader.h">
+      <Filter>src\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client\ClientPlayer.h">
+      <Filter>src\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client\UserInput.h">
+      <Filter>src\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client\AppMessages.h">
+      <Filter>src\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Voxel\Chunk16.h">
+      <Filter>src\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client\ClientChunk.h">
+      <Filter>src\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client\Lightings.h">
+      <Filter>src\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client\ClientContext.h">
+      <Filter>src\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Advanced\RTUCBufferGroup.h">
+      <Filter>src\Graphics\Advanced</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client\ChunkScene.h">
+      <Filter>src\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\Ray.h">
+      <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\MathCommon.h">
+      <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderPipeline\ClientToRenderPipeline.h">
+      <Filter>src\RenderPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderPipeline\DeferredRenderPipeline.h">
+      <Filter>src\RenderPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderPipeline\RenderPipelineContext.h">
+      <Filter>src\RenderPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderPipeline\IRenderPipeline.h">
+      <Filter>src\RenderPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderPipeline\Containers.h">
+      <Filter>src\RenderPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client\NetToClient.h">
+      <Filter>src\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\DX12Util.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Compression\lz4.h">
+      <Filter>src\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Compression\lz4hc.h">
+      <Filter>src\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Net\NetDataWrapLayout.h">
+      <Filter>src\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Net\NetContext.h">
+      <Filter>src\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Net\NetBlock.h">
+      <Filter>src\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Compression\xxhash.h">
+      <Filter>src\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderPipeline\RendererCore.h">
+      <Filter>src\RenderPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\RTUGraphicsInterfaces.h">
+      <Filter>src\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12GraphicsFactory.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12GraphicsContext.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12SBuffer.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12CBuffer.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12Mesh.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12PipelineState.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12RootSignature.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12Texture2D.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12RenderTexture2D.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11GraphicsFactory.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11CBuffer.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11SBuffer.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11RenderTexture2D.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11Texture2D.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11GraphicsContext.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11Mesh.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11PipelineState.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11RootSignature.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\PhysX\RTUPXFactory.h">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\RTUPhysicsInterfaces.h">
+      <Filter>src\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\PhysX\RTUPXScene.h">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\PhysX\RTUPXDevice.h">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\PhysX\RTUPXRigidBody.h">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\PhysX\RTUPXController.h">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\IncreasePerformance.h">
+      <Filter>src\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderPipeline\RenderPipelineResources.h">
+      <Filter>src\RenderPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\PhysX\RTUPXStatic.h">
+      <Filter>src\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\FrustumCull.h">
+      <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client\ChunkNode.h">
+      <Filter>src\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\RTUPSODesc.h">
+      <Filter>src\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11GraphicsDevice.h">
+      <Filter>src\Graphics\DirectX11</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12GraphicsDevice.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKGraphicsDevice.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKGraphicsFactory.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKTexture2D.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKCBuffer.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKSBuffer.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKRootSignature.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKRenderTexture2D.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKGraphicsContext.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKMesh.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKPipelineState.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Vulkan\VkUtil.h">
+      <Filter>src\Graphics\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DirectX12\d3dx12.h">
+      <Filter>src\Graphics\DirectX12</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\Deferred_GBuffer_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\PostProcess_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Deferred_GBuffer_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Screen_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Deferred_IBL_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Deferred_DirectLight_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Shadow_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\White_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Position_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\simpletexture.png">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Textures\brdflut.png">
+      <Filter>Textures</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

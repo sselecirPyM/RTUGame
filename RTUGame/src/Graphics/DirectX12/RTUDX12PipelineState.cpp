@@ -1,0 +1,27 @@
+//Copyright (c) 2021 sselecirPyM
+//This file is part of RTU Game.
+//
+//RTU Game is free software : you can redistribute itand /or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//RTU Game is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with RTU Game.If not, see < https://www.gnu.org/licenses/>.
+#include "stdafx.h"
+#include "RTUDX12PipelineState.h"
+
+ID3D12PipelineState* RTUDX12PipelineState::GetPipelineState(RTUPipelineStateDesc* desc)
+{
+	for (int i = 0; i < m_psoDescs.size(); i++)
+	{
+		if (memcmp(&m_psoDescs[i], desc, sizeof(RTUPipelineStateDesc)) == 0)
+			return m_pipelineStates[i].Get();
+	}
+	return nullptr;
+}

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy $(SolutionDir)\RTUGameServer\bin\$(PlatformName)\$(Configuration) $(OutDir)\RTUGameServer\ /i/y/s&#xD;&#xA;xcopy $(SolutionDir)\$(PlatformName)\$(Configuration)\RTUGame $(OutDir)\RTUGame\ /i/y/s" />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RTUGameServer\RTUGameServer.csproj" />
+    <ProjectReference Include="..\RTUGame\RTUGame.vcxproj" />
+  </ItemGroup>
+
+</Project>

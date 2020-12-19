@@ -1,0 +1,33 @@
+//Copyright (c) 2021 sselecirPyM
+//This file is part of RTU Game.
+//
+//RTU Game is free software : you can redistribute itand /or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//RTU Game is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with RTU Game.If not, see < https://www.gnu.org/licenses/>.
+#include "stdafx.h"
+#include "RTUPXStatic.h"
+
+template<class _classA>
+inline void _FreePx(_classA*& v)
+{
+	if (v)
+	{
+		v->release();
+		v = nullptr;
+	}
+}
+RTUPXStatic::~RTUPXStatic()
+{
+	_FreePx(m_rigidStatic);
+	_FreePx(m_physicsMaterial);
+	_FreePx(m_triangleMesh);
+}

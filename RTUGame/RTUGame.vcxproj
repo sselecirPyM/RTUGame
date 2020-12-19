@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Client\ChunkNode.cpp" />
+    <ClCompile Include="src\Client\ChunkScene.cpp" />
+    <ClCompile Include="src\Client\ClientChunk.cpp" />
+    <ClCompile Include="src\Client\ClientContext.cpp" />
+    <ClCompile Include="src\Client\ClientPlayer.cpp" />
+    <ClCompile Include="src\Common\IncreasePerformance.cpp" />
+    <ClCompile Include="src\Compression\lz4.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Compression\lz4hc.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Compression\xxhash.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11CBuffer.cpp" />
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11GraphicsDevice.cpp" />
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11GraphicsContext.cpp" />
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11GraphicsFactory.cpp" />
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11Mesh.cpp" />
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11PipelineState.cpp" />
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11RenderTexture2D.cpp" />
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11RootSignature.cpp" />
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11SBuffer.cpp" />
+    <ClCompile Include="src\Graphics\DirectX11\RTUDX11Texture2D.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12GraphicsDevice.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12GraphicsFactory.cpp" />
+    <ClCompile Include="src\Graphics\RTUGraphicsInterfaces.cpp" />
+    <ClCompile Include="src\Graphics\RTUPSODesc.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKCBuffer.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKGraphicsContext.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKGraphicsDevice.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKGraphicsFactory.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKMesh.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKPipelineState.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKRenderTexture2D.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKRootSignature.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKSBuffer.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\RTUVKTexture2D.cpp" />
+    <ClCompile Include="src\Net\NetBlock.cpp" />
+    <ClCompile Include="src\Net\NetDataWrapLayout.cpp" />
+    <ClCompile Include="src\Physics\PhysX\RTUPXController.cpp" />
+    <ClCompile Include="src\Physics\PhysX\RTUPXDevice.cpp" />
+    <ClCompile Include="src\Physics\PhysX\RTUPXFactory.cpp" />
+    <ClCompile Include="src\Physics\PhysX\RTUPXRigidBody.cpp" />
+    <ClCompile Include="src\Physics\PhysX\RTUPXScene.cpp" />
+    <ClCompile Include="src\Physics\PhysX\RTUPXStatic.cpp" />
+    <ClCompile Include="src\RenderPipeline\ClientToRenderPipeline.cpp" />
+    <ClCompile Include="src\RenderPipeline\DeferredRenderPipeline.cpp" />
+    <ClCompile Include="src\Math\FrustumCull.cpp" />
+    <ClCompile Include="src\Client\Lightings.cpp" />
+    <ClCompile Include="src\Net\NetContext.cpp" />
+    <ClCompile Include="src\Client\NetToClient.cpp" />
+    <ClCompile Include="src\RenderPipeline\RendererCore.cpp" />
+    <ClCompile Include="src\RenderPipeline\RenderPipelineContext.cpp" />
+    <ClCompile Include="src\Client\UserInput.cpp" />
+    <ClCompile Include="src\Graphics\Advanced\RTUCBufferGroup.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12CBuffer.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12PipelineState.cpp" />
+    <ClCompile Include="src\Graphics\RTUPipelineStateLoader.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12RenderTexture2D.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12RootSignature.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12Mesh.cpp" />
+    <ClCompile Include="src\AppCore.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12GraphicsContext.cpp" />
+    <ClCompile Include="src\Graphics\RTUMeshLoader.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12SBuffer.cpp" />
+    <ClCompile Include="src\Graphics\DirectX12\RTUDX12Texture2D.cpp" />
+    <ClCompile Include="src\Graphics\RTUTexture2DLoader.cpp" />
+    <ClCompile Include="src\IAppCore.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Math\Ray.cpp" />
+    <ClCompile Include="src\RenderPipeline\RenderPipelineResources.cpp" />
+    <ClCompile Include="src\Voxel\Chunk16.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Win32Application.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Client\AppMessages.h" />
+    <ClInclude Include="src\Client\ChunkNode.h" />
+    <ClInclude Include="src\Client\ChunkScene.h" />
+    <ClInclude Include="src\Client\ClientChunk.h" />
+    <ClInclude Include="src\Client\ClientContext.h" />
+    <ClInclude Include="src\Client\ClientPlayer.h" />
+    <ClInclude Include="src\Common\IncreasePerformance.h" />
+    <ClInclude Include="src\Compression\lz4.h" />
+    <ClInclude Include="src\Compression\lz4hc.h" />
+    <ClInclude Include="src\Compression\xxhash.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11CBuffer.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11GraphicsDevice.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11GraphicsContext.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11GraphicsFactory.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11Mesh.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11PipelineState.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11RenderTexture2D.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11RootSignature.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11SBuffer.h" />
+    <ClInclude Include="src\Graphics\DirectX11\RTUDX11Texture2D.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12GraphicsDevice.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12GraphicsFactory.h" />
+    <ClInclude Include="src\Graphics\RTUGraphicsInterfaces.h" />
+    <ClInclude Include="src\Graphics\RTUPSODesc.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKCBuffer.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKGraphicsContext.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKGraphicsDevice.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKGraphicsFactory.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKMesh.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKPipelineState.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKRenderTexture2D.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKRootSignature.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKSBuffer.h" />
+    <ClInclude Include="src\Graphics\Vulkan\RTUVKTexture2D.h" />
+    <ClInclude Include="src\Graphics\Vulkan\VkUtil.h" />
+    <ClInclude Include="src\Net\NetBlock.h" />
+    <ClInclude Include="src\Net\NetDataWrapLayout.h" />
+    <ClInclude Include="src\Physics\PhysX\RTUPXController.h" />
+    <ClInclude Include="src\Physics\PhysX\RTUPXDevice.h" />
+    <ClInclude Include="src\Physics\PhysX\RTUPXFactory.h" />
+    <ClInclude Include="src\Physics\PhysX\RTUPXRigidBody.h" />
+    <ClInclude Include="src\Physics\PhysX\RTUPXScene.h" />
+    <ClInclude Include="src\Physics\PhysX\RTUPXStatic.h" />
+    <ClInclude Include="src\Physics\RTUPhysicsInterfaces.h" />
+    <ClInclude Include="src\RenderPipeline\ClientToRenderPipeline.h" />
+    <ClInclude Include="src\RenderPipeline\Containers.h" />
+    <ClInclude Include="src\RenderPipeline\DeferredRenderPipeline.h" />
+    <ClInclude Include="src\Math\FrustumCull.h" />
+    <ClInclude Include="src\Client\Lightings.h" />
+    <ClInclude Include="src\RenderPipeline\IRenderPipeline.h" />
+    <ClInclude Include="src\Net\NetContext.h" />
+    <ClInclude Include="src\Client\NetToClient.h" />
+    <ClInclude Include="src\RenderPipeline\RendererCore.h" />
+    <ClInclude Include="src\RenderPipeline\RenderPipelineContext.h" />
+    <ClInclude Include="src\Client\UserInput.h" />
+    <ClInclude Include="src\Common\RTUCommon.h" />
+    <ClInclude Include="src\Common\RTU_STATES.h" />
+    <ClInclude Include="src\Graphics\Advanced\RTUCBufferGroup.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12CBuffer.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12PipelineState.h" />
+    <ClInclude Include="src\Graphics\RTUPipelineStateLoader.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12RenderTexture2D.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12RootSignature.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12Mesh.h" />
+    <ClInclude Include="src\AppCore.h" />
+    <ClInclude Include="src\Graphics\DirectX12\d3dx12.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12GraphicsContext.h" />
+    <ClInclude Include="src\Graphics\DirectX12\DX12Util.h" />
+    <ClInclude Include="src\Graphics\RTUMeshLoader.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12SBuffer.h" />
+    <ClInclude Include="src\Graphics\DirectX12\RTUDX12Texture2D.h" />
+    <ClInclude Include="src\Graphics\RTUTexture2DLoader.h" />
+    <ClInclude Include="src\IAppCore.h" />
+    <ClInclude Include="src\DXUtil.h" />
+    <ClInclude Include="src\Math\MathCommon.h" />
+    <ClInclude Include="src\Math\Ray.h" />
+    <ClInclude Include="src\RenderPipeline\RenderPipelineResources.h" />
+    <ClInclude Include="src\Voxel\Chunk16.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="src\Win32Application.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\Deferred_DirectLight_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Deferred_GBuffer_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Deferred_GBuffer_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Deferred_IBL_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Position_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\PostProcess_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Screen_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\Shadow_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\White_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\brdflut.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Textures\simpletexture.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{ccde7d36-fe5d-44ba-baac-faa8fdb2da88}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>RTUGame</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\x86\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\x86\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(VK_SDK_PATH)/Include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d12.lib;d3d11.lib;dxgi.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VK_SDK_PATH)\Lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(VK_SDK_PATH)/Include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d12.lib;d3d11.lib;dxgi.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VK_SDK_PATH)\Lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(VK_SDK_PATH)/Include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d12.lib;d3d11.lib;dxgi.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
+      <AdditionalLibraryDirectories>$(VK_SDK_PATH)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(VK_SDK_PATH)/Include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d12.lib;d3d11.lib;dxgi.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
+      <AdditionalLibraryDirectories>$(VK_SDK_PATH)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

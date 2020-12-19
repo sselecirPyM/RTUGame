@@ -1,0 +1,170 @@
+//Copyright (c) 2021 sselecirPyM
+//This file is part of RTU Game.
+//
+//RTU Game is free software : you can redistribute itand /or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//RTU Game is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with RTU Game.If not, see < https://www.gnu.org/licenses/>.
+#include "stdafx.h"
+#include "DeferredRenderPipeline.h"
+using namespace DirectX;
+
+void DeferredRenderPipeline::PrepareRenderData(RenderPipelineContext* context, IRTUGraphicsContext* graphicsContext)
+{
+	int syncIndex = context->m_dynamicContex_r->m_syncIndex;
+	auto& bigBuffer = context->m_bigBuffer;
+	auto& dcr = context->m_dynamicContex_r;
+	auto& m_graphicsDevice = context->m_graphicsDevice;
+
+	//Note: we don't want to read a protected memory. So copy that into a big buffer to avoid it.
+	memcpy(bigBuffer, &dcr->m_cameraData, sizeof(dcr->m_cameraData));
+	graphicsContext->UpdateBuffer(context->m_mainBuffer.get(), syncIndex, bigBuffer, sizeof(dcr->m_cameraData));
+
+	context->m_lightBufferGroup.RequireSliceCount(m_graphicsDevice.get(), 1);
+	byte* ptr1 = (byte*)context->m_lightBufferGroup.GetSlicePtr(graphicsContext, syncIndex, 0);
+	memcpy(ptr1, dcr->m_mainLightMatrice, sizeof(dcr->m_mainLightMatrice));
+	ptr1 += sizeof(dcr->m_mainLightMatrice);
+	memcpy(ptr1, &dcr->m_mainLightData, sizeof(dcr->m_mainLightData));
+	context->m_lightBufferGroup.UpdateSliceComplete(graphicsContext, syncIndex);
+
+	int ofs1 = 0;
+	context->m_renderObjectBufferGroup.RequireSliceCount(m_graphicsDevice.get(), dcr->m_cullResultChunk.size() + dcr->m_anotherRenderList.size() + dcr->m_shadowCullResult.size());
+	for (int i = 0; i < dcr->m_cullResultChunk.size(); i++)
+	{
+		XMFLOAT4X4 toWorldMatrix = dcr->m_cullResultChunk[i].m_toWorldMatrix;
+		memcpy(context->m_renderObjectBufferGroup.GetSlicePtr(graphicsContext, syncIndex, ofs1), &toWorldMatrix, sizeof(toWorldMatrix));
+		ofs1++;
+	}
+	for (int i = 0; i < dcr->m_anotherRenderList.size(); i++)
+	{
+		XMFLOAT4X4 toWorldMatrix = dcr->m_anotherRenderList[i].m_toWorldMatrix;
+		memcpy(context->m_renderObjectBufferGroup.GetSlicePtr(graphicsContext, syncIndex, ofs1), &toWorldMatrix, sizeof(toWorldMatrix));
+		ofs1++;
+	}
+	for (int i = 0; i < dcr->m_shadowCullResult.size(); i++)
+	{
+		XMFLOAT4X4 toWorldMatrix = dcr->m_shadowCullResult[i].m_toWorldMatrix;
+		memcpy(context->m_renderObjectBufferGroup.GetSlicePtr(graphicsContext, syncIndex, ofs1), &toWorldMatrix, sizeof(toWorldMatrix));
+		ofs1++;
+	}
+	context->m_renderObjectBufferGroup.UpdateSliceComplete(graphicsContext, syncIndex);
+}
+
+void DeferredRenderPipeline::Render(RenderPipelineContext* context,IRTUGraphicsContext* graphicsContext)
+{
+	RTUPipelineStateDesc desc1 = {};
+	desc1.dsvFormat = context->m_depthFormat;
+	desc1.rtvFormat = context->m_swapChainFormat;
+	desc1.primitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	desc1.eInputLayout = RTU_INPUT_LAYOUT_POSITION_ONLY;
+	desc1.renderTargetCount = 1;
+
+	RTUPipelineStateDesc desc_gbuffer = desc1;
+	desc_gbuffer.renderTargetCount = 3;
+	desc_gbuffer.rtvFormat = context->m_gbufferFormat;
+	desc_gbuffer.eInputLayout = RTU_INPUT_LAYOUT_P_N_UV_T;
+
+	RTUPipelineStateDesc desc_shadow = desc1;
+	desc_shadow.renderTargetCount = 0;
+	desc_shadow.depthBias = 4000;
+	desc_shadow.rtvFormat = DXGI_FORMAT_UNKNOWN;
+
+	RTUPipelineStateDesc desc_pass = desc1;
+	desc_pass.dsvFormat = DXGI_FORMAT_UNKNOWN;
+	desc_pass.rtvFormat = context->m_outputFormat;
+	desc_pass.blendmode = RTU_BLEND_MODE_ADD;
+
+	RTUPipelineStateDesc desc_postprocess = desc1;
+	desc_postprocess.dsvFormat = DXGI_FORMAT_UNKNOWN;
+	desc_postprocess.rtvFormat = context->m_swapChainFormat;
+
+	int syncIndex = context->m_dynamicContex_r->m_syncIndex;
+	auto& graphicsDevice = context->m_graphicsDevice;
+	auto& shaderResources = context->m_renderPipelineResources;
+	auto& dcr = context->m_dynamicContex_r;
+	auto RS1 = context->m_rootSignaturePasses.get();
+	float clearColor[4] = {};
+
+	//generate gbuffer
+	IRTURenderTexture2D* pRT4[4] = { context->m_screenSizeRTV[0].get() ,context->m_screenSizeRTV[1].get() ,context->m_screenSizeRTV[2].get() ,context->m_screenSizeRTV[3].get() };
+	graphicsContext->SetRenderTargetRTVDSV(graphicsDevice.get(), pRT4, 4, context->m_screenSizeDSV[0].get());
+	graphicsContext->ClearDSV(graphicsDevice.get(), context->m_screenSizeDSV[0].get());
+	for (int i = 0; i < 4; i++)
+	{
+		graphicsContext->ClearRTV(graphicsDevice.get(), context->m_screenSizeRTV[i].get(), clearColor);
+	}
+	graphicsContext->SetGraphicsRootSignature(RS1);
+	graphicsContext->SetCBVR(context->m_mainBuffer.get(), syncIndex,0,0, 0);
+	graphicsContext->SetSRVT(context->m_testTexture.get(), 3);
+
+	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1,shaderResources.m_deferred_gbuffer.get(), &desc_gbuffer);
+	int ofs1 = 0;
+	for (int i = 0; i < dcr->m_cullResultChunk.size(); i++)
+	{
+		assert(dcr->m_cullResultChunk[i].m_mesh->GetState() == RTU_STATES::RTU_STATES_LOADED);
+		graphicsContext->SetMesh(dcr->m_cullResultChunk[i].m_mesh);
+		context->m_renderObjectBufferGroup.SetCBVR(graphicsContext, syncIndex, ofs1, 1);
+		graphicsContext->DrawIndexed(dcr->m_cullResultChunk[i].m_indexCount, dcr->m_cullResultChunk[i].m_startIndex, 0);
+		ofs1++;
+	}
+	for (int i = 0; i < dcr->m_anotherRenderList.size(); i++)
+	{
+		assert(dcr->m_anotherRenderList[i].m_mesh->GetState() == RTU_STATES::RTU_STATES_LOADED);
+		graphicsContext->SetMesh(dcr->m_anotherRenderList[i].m_mesh);
+		context->m_renderObjectBufferGroup.SetCBVR(graphicsContext, syncIndex, ofs1, 1);
+		graphicsContext->DrawIndexed(dcr->m_anotherRenderList[i].m_mesh->GetIndexCount(), 0, 0);
+		ofs1++;
+	}
+	//passes
+	IRTURenderTexture2D* pOutputRT = context->m_outputRTV.get();
+	//IBL
+	graphicsContext->SetRenderTargetRTV(graphicsDevice.get(), &pOutputRT, 1);
+	graphicsContext->ClearRTV(graphicsDevice.get(), context->m_outputRTV.get(), clearColor);
+	graphicsContext->SetSRVT(context->m_screenSizeRTV[0].get(), 3);
+	graphicsContext->SetSRVT(context->m_screenSizeRTV[1].get(), 4);
+	graphicsContext->SetSRVT(context->m_screenSizeDSV[0].get(), 5);
+	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1, shaderResources.m_deferred_IBL.get(), &desc_pass);
+	graphicsContext->SetMesh(context->m_quadModel0.get());
+	graphicsContext->DrawIndexed(context->m_quadModel0->GetIndexCount(), 0, 0);
+
+	//lightings
+	graphicsContext->SetRenderTargetDSV(graphicsDevice.get(), context->m_shadowMaps[0].get());
+	graphicsContext->ClearDSV(graphicsDevice.get(), context->m_shadowMaps[0].get());
+	context->m_lightBufferGroup.SetCBVR(graphicsContext, syncIndex, 0, 0);
+	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1, shaderResources.m_shadow.get(), &desc_shadow);
+	for (int i = 0; i < dcr->m_shadowCullResult.size(); i++)
+	{
+		assert(dcr->m_shadowCullResult[i].m_mesh->GetState() == RTU_STATES::RTU_STATES_LOADED);
+		context->m_renderObjectBufferGroup.SetCBVR(graphicsContext, syncIndex, ofs1, 1);
+		graphicsContext->SetMesh(dcr->m_shadowCullResult[i].m_mesh);
+		graphicsContext->DrawIndexed(dcr->m_shadowCullResult[i].m_indexCount, dcr->m_shadowCullResult[i].m_startIndex, 0);
+		ofs1++;
+	}
+	graphicsContext->SetRenderTargetRTV(graphicsDevice.get(), &pOutputRT, 1);
+	graphicsContext->SetCBVR(context->m_mainBuffer.get(), syncIndex,0,0, 0);
+	context->m_lightBufferGroup.SetCBVR(graphicsContext, syncIndex, 0, 1);
+	graphicsContext->SetSRVT(context->m_screenSizeRTV[0].get(), 3);
+	graphicsContext->SetSRVT(context->m_screenSizeRTV[1].get(), 4);
+	graphicsContext->SetSRVT(context->m_screenSizeDSV[0].get(), 5);
+	graphicsContext->SetSRVT(context->m_shadowMaps[0].get(), 6);
+	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1, shaderResources.m_deferred_directLight.get(),&desc_pass);
+	graphicsContext->SetMesh(context->m_quadModel0.get());
+	graphicsContext->DrawIndexed(context->m_quadModel0->GetIndexCount(), 0, 0);
+
+
+	//post process
+	graphicsContext->SetRenderTargetScreen(graphicsDevice.get(), nullptr);
+	graphicsContext->ClearScreen(graphicsDevice.get(), context->m_clearColor);
+	graphicsContext->SetSRVT(context->m_outputRTV.get(), 3);
+	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1, shaderResources.m_postprocess.get(), &desc_postprocess);
+	graphicsContext->SetMesh(context->m_quadModel0.get());
+	graphicsContext->DrawIndexed(context->m_quadModel0->GetIndexCount(), 0, 0);
+}
