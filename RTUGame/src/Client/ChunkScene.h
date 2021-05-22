@@ -25,13 +25,13 @@ using namespace DirectX;
 class ChunkScene
 {
 public:
-	std::map<XMINT3, ChunkNode_1, XMINT3Comparer> m_chunkTree2;
+	std::map<glm::i32vec3, ChunkNode_1, XMINT3Comparer> m_chunkTree2;
 	void Add(ClientChunk* chunk, ClientChunk** popIfExist);
 	//void Cull(FrustumCull& frustumCull, XMINT3& relatePosition, std::vector<ClientChunk*>& result);
-	void Cull(FrustumCull& frustumCull, XMINT3& relatePosition, std::vector<DrawContainer0>& result);
-	bool TryGetChunk(XMINT3 position, ClientChunk** result);
-	bool TryGetChunk(XMINT3 position, ChunkNode_Bottom** result);
-	bool TryGetBlock(XMINT3 position, std::uint32_t* result);
-	bool CastRay(RTU::Ray ray, XMINT3 relatePosition, XMINT3* hitResult, XMINT3* surfaceHit);
+	void Cull(FrustumCull& frustumCull, glm::i32vec3& relatePosition, std::vector<DrawContainer0>& result);
+	bool TryGetChunk(glm::i32vec3 position, ClientChunk** result);
+	bool TryGetChunk(glm::i32vec3 position, ChunkNode_Bottom** result);
+	bool TryGetBlock(glm::i32vec3 position, std::uint32_t* result);
+	bool CastRay(RTU::Ray ray, glm::i32vec3 relatePosition, glm::i32vec3* hitResult, glm::i32vec3* surfaceHit);
 };
 

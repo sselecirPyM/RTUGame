@@ -16,7 +16,6 @@
 #pragma once
 #include "../Graphics/RTUGraphicsInterfaces.h"
 #include "../Client/ClientPlayer.h"
-#include "RenderPipelineResources.h"
 #include "Containers.h"
 #include "../Graphics/Advanced/RTUCBufferGroup.h"
 
@@ -44,7 +43,7 @@ public:
 	void ProcessSizeChange(int width, int height);
 	void SetQuality(std::uint32_t quality);
 
-	DirectX::XMUINT2 m_screenSize;
+	glm::u32vec2 m_screenSize;
 	float m_aspectRatio;
 
 	DXGI_FORMAT m_swapChainFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -66,20 +65,15 @@ public:
 	RTUCBufferGroup m_lightBufferGroup;
 	RTUCBufferGroup m_renderObjectBufferGroup;
 
-	std::unique_ptr <IRTUMesh> m_cubeModel1;
-	std::unique_ptr <IRTUMesh> m_cubeModelWire;
-	std::unique_ptr <IRTUMesh> m_quadModel0;
-	std::unique_ptr <IRTUTexture2D> m_textureLoading;
-	std::unique_ptr <IRTUTexture2D> m_textureError;
-	std::unique_ptr <IRTUTexture2D> m_textureBrdfLut;
-	std::unique_ptr <IRTUTexture2D> m_testTexture;
+	std::map<std::string, std::unique_ptr<IRTUPipelineState>> m_pipelineStates;
+	std::map<std::string, std::unique_ptr <IRTUTexture2D>>m_textures;
+	std::map<std::string, std::unique_ptr <IRTURenderTexture2D>>m_renderTextures;
+	std::map<std::string, std::unique_ptr <IRTUMesh>> m_meshes;
 
 	std::unique_ptr <IRTURenderTexture2D> m_screenSizeRTV[4];
 	std::unique_ptr <IRTURenderTexture2D> m_screenSizeDSV[2];
 	std::unique_ptr <IRTURenderTexture2D> m_shadowMaps[2];
 	std::unique_ptr <IRTURenderTexture2D> m_outputRTV;
-
-	RenderPipelineResources m_renderPipelineResources;
 
 	RenderPipelineDynamicContext* m_dynamicContex_w = &_dynamicContex[0];
 	RenderPipelineDynamicContext* m_dynamicContex_r = &_dynamicContex[1];
@@ -95,19 +89,17 @@ public:
 	std::vector<Texture2DUploadContainer> _texture2DLoadList[2];
 	std::mutex lock_texture2DLoadList;
 
-	std::vector<std::shared_ptr<RTUMeshLoader>> m_meshLoaderRecycleList[c_maxQueueFrameCount];
-	std::vector<std::shared_ptr<RTUTexture2DLoader>> m_textureLoaderRecycleList[c_maxQueueFrameCount];
-	std::vector<std::unique_ptr<IRTUMesh>> m_meshRecycleList[c_maxQueueFrameCount];
-	std::vector<std::unique_ptr<IRTUMesh>>* m_meshRecycleList_w = &m_meshRecycleList[0];
-
 	std::vector<IRTUGraphicsContext*> m_executeList;
 	char m_bigBuffer[65536];
 
 	std::wstring m_assetsPath;
-	void ClearRecycleList(int executeIndex);
 private:
 	std::wstring AssetPath(LPCWSTR assetName)
 	{
 		return m_assetsPath + assetName;
 	}
+	IRTUPipelineState* PipelineState(std::string name);
+	IRTUTexture2D* Texture2D(std::string name);
+	IRTURenderTexture2D* RenderTexture2D(std::string name);
+	IRTUMesh* Mesh(std::string name);
 };

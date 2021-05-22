@@ -21,7 +21,7 @@ void ChunkScene::Add(ClientChunk* chunk, ClientChunk** popIfExist)
 {
 	auto& position = chunk->m_chunk.m_position;
 
-	XMINT3 alignedMax = MathAlignedDown(position, c_chunkTreeRange);
+	glm::i32vec3 alignedMax = MathAlignedDown(position, c_chunkTreeRange);
 
 	auto TopNode1 = m_chunkTree2.find(alignedMax);
 	if(TopNode1!=m_chunkTree2.end())
@@ -30,7 +30,7 @@ void ChunkScene::Add(ClientChunk* chunk, ClientChunk** popIfExist)
 	}
 	else
 	{
-		m_chunkTree2.insert(std::pair<XMINT3, ChunkNode_1>(alignedMax, ChunkNode_1(2)));
+		m_chunkTree2.insert(std::pair<glm::i32vec3, ChunkNode_1>(alignedMax, ChunkNode_1(2)));
 		TopNode1 = m_chunkTree2.find(alignedMax);
 		TopNode1->second.m_position = alignedMax;
 		ChunkNodeOP::Add(&TopNode1->second, chunk, popIfExist);
@@ -45,7 +45,7 @@ void ChunkScene::Add(ClientChunk* chunk, ClientChunk** popIfExist)
 //	}
 //}
 
-void ChunkScene::Cull(FrustumCull& frustumCull, XMINT3& relatePosition, std::vector<DrawContainer0>& result)
+void ChunkScene::Cull(FrustumCull& frustumCull, glm::i32vec3& relatePosition, std::vector<DrawContainer0>& result)
 {
 	for (auto it = m_chunkTree2.begin(); it != m_chunkTree2.end(); it++)
 	{
@@ -53,10 +53,10 @@ void ChunkScene::Cull(FrustumCull& frustumCull, XMINT3& relatePosition, std::vec
 	}
 }
 
-bool ChunkScene::TryGetChunk(DirectX::XMINT3 position, ClientChunk** result)
+bool ChunkScene::TryGetChunk(glm::i32vec3 position, ClientChunk** result)
 {
-	XMINT3 aligned2 = MathAlignedDown(position, c_chunkTreeRange);
-	auto p2 = m_chunkTree2.find(aligned2);
+	glm::i32vec3 aligned2 = MathAlignedDown(position, c_chunkTreeRange);
+	auto p2 = m_chunkTree2.find(glm::i32vec3(aligned2.x,aligned2.y,aligned2.z));
 	if (p2 != m_chunkTree2.end())
 	{
 		return ChunkNodeOP::TryGetChunk(&p2->second,position, result);
@@ -65,15 +65,14 @@ bool ChunkScene::TryGetChunk(DirectX::XMINT3 position, ClientChunk** result)
 		return false;
 }
 
-bool ChunkScene::TryGetChunk(XMINT3 position, ChunkNode_Bottom** result)
+bool ChunkScene::TryGetChunk(glm::i32vec3 position, ChunkNode_Bottom** result)
 {
-	XMINT3 aligned2 = MathAlignedDown(position, c_chunkTreeRange);
+	glm::i32vec3 aligned2 = MathAlignedDown(position, c_chunkTreeRange);
 	auto p2 = m_chunkTree2.find(aligned2);
 	if (p2 != m_chunkTree2.end())
 	{
 		ChunkNode_Bottom* chunk = nullptr;
 		if (!ChunkNodeOP::TryGetChunk(&p2->second, position, &chunk))return false;
-		XMINT3 index = MathSub(position, MathAlignedDown(position, 16));
 		*result = chunk;
 		return result;
 	}
@@ -81,15 +80,15 @@ bool ChunkScene::TryGetChunk(XMINT3 position, ChunkNode_Bottom** result)
 		return false;
 }
 
-bool ChunkScene::TryGetBlock(DirectX::XMINT3 position, std::uint32_t* result)
+bool ChunkScene::TryGetBlock(glm::i32vec3 position, std::uint32_t* result)
 {
-	XMINT3 aligned2 = MathAlignedDown(position, c_chunkTreeRange);
+	glm::i32vec3 aligned2 = MathAlignedDown(position, c_chunkTreeRange);
 	auto p2 = m_chunkTree2.find(aligned2);
 	if (p2 != m_chunkTree2.end())
 	{
 		ClientChunk* chunk = nullptr;
 		if (!ChunkNodeOP::TryGetChunk(&p2->second,position, &chunk))return false;
-		XMINT3 index = MathSub(position, MathAlignedDown(position, 16));
+		glm::i32vec3 index = position- MathAlignedDown(position, 16);
 		*result = chunk->m_chunk.m_data[index.z][index.y][index.x];
 		return result;
 	}
@@ -97,11 +96,11 @@ bool ChunkScene::TryGetBlock(DirectX::XMINT3 position, std::uint32_t* result)
 		return false;
 }
 
-bool ChunkScene::CastRay(RTU::Ray ray, XMINT3 relatePosition, XMINT3* hitResult, XMINT3* surfaceHit)
+bool ChunkScene::CastRay(RTU::Ray ray, glm::i32vec3 relatePosition, glm::i32vec3* hitResult, glm::i32vec3* surfaceHit)
 {
 	if (FLOAT3Equal(ray.StartPoint, ray.EndPoint))return false;
-	XMINT3 currentPosition;
-	XMStoreSInt3(&currentPosition, XMVectorFloor(XMLoadFloat3(&ray.StartPoint)));
+	glm::i32vec3 currentPosition;
+	XMStoreSInt3((XMINT3*)&currentPosition, XMVectorFloor(XMLoadFloat3(&ray.StartPoint)));
 	currentPosition = MathAlignedDown(MathAdd(currentPosition, relatePosition), 16);
 
 	XMVECTOR p1 = XMLoadFloat3(&ray.StartPoint);
@@ -109,7 +108,7 @@ bool ChunkScene::CastRay(RTU::Ray ray, XMINT3 relatePosition, XMINT3* hitResult,
 	XMVECTOR dir = XMVector3Normalize(p2 - p1);
 	XMFLOAT3 _next;
 	XMStoreFloat3(&_next, dir);
-	XMINT3 next1 =
+	glm::i32vec3 next1 =
 	{
 		(_next.x < 0) ? -1 : 1,
 		(_next.y < 0) ? -1 : 1,
@@ -122,11 +121,11 @@ bool ChunkScene::CastRay(RTU::Ray ray, XMINT3 relatePosition, XMINT3* hitResult,
 		XMVECTORF32{0.0f,1.0f,0.0f,(_next.y > 0) ? -16.0f : 0.0f},
 		XMVECTORF32{0.0f,0.0f,1.0f,(_next.z > 0) ? -16.0f : 0.0f},
 	};
-	XMINT3 vecAdd[] =
+	glm::i32vec3 vecAdd[] =
 	{
-		XMINT3(next1.x * 16,0,0),
-		XMINT3(0,next1.y * 16,0),
-		XMINT3(0,0,next1.z * 16),
+		glm::i32vec3(next1.x * 16,0,0),
+		glm::i32vec3(0,next1.y * 16,0),
+		glm::i32vec3(0,0,next1.z * 16),
 	};
 
 	XMVECTOR pos1 = XMVECTORF32{ -1e-5,-1e-5,-1e-5 };
@@ -134,14 +133,14 @@ bool ChunkScene::CastRay(RTU::Ray ray, XMINT3 relatePosition, XMINT3* hitResult,
 	while (true)
 	{
 		ClientChunk* chunk = nullptr;
-		if (TryGetChunk(currentPosition, &chunk) && chunk->CastRay(ray, relatePosition, hitResult, surfaceHit))
+		if (TryGetChunk(glm::i32vec3(currentPosition.x,currentPosition.y,currentPosition.z), &chunk) && chunk->CastRay(ray, relatePosition, hitResult, surfaceHit))
 		{
 			return true;
 		}
 		else
 		{
 			auto _1 = MathSub(currentPosition, relatePosition);
-			XMVECTOR s1 = XMLoadSInt3(&_1);
+			XMVECTOR s1 = XMLoadSInt3((XMINT3*)&_1);
 			XMVECTOR p1 = XMLoadFloat3(&ray.StartPoint) - s1;
 			XMVECTOR p2 = XMLoadFloat3(&ray.EndPoint) - s1;
 

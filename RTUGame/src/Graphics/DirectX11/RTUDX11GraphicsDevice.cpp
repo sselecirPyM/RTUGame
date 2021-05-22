@@ -338,6 +338,10 @@ void RTUDX11GraphicsDevice::InitRenderTexture2D(IRTURenderTexture2D* _texture, i
 	}
 }
 
+void RTUDX11GraphicsDevice::RemoveMesh(IRTUMesh* mesh)
+{
+}
+
 void RTUDX11GraphicsDevice::Uninit()
 {
 }

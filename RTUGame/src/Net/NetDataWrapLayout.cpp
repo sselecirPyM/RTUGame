@@ -118,7 +118,7 @@ void NetDataWrapLayout::ReceiveService()
 			if (m_receiveDataLength < c_metaLength)
 				break;
 			int messageHeader = *((int*)&m_recevingBuffer[peekIndex]);
-			int messageLength = max(min(*((int*)&m_recevingBuffer[peekIndex + 4]), 65528), 0);
+			int messageLength = std::max<int>(std::min<int>(*((int*)&m_recevingBuffer[peekIndex + 4]), 65528), 0);
 			if (messageLength == 0)
 			{
 				m_receiveDataLength -= messageLength + c_metaLength;

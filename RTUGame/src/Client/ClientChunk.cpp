@@ -27,11 +27,11 @@ struct PosNormUVTan
 	XMFLOAT3 Tangent;
 };
 
-bool ClientChunk::CastRay(RTU::Ray ray, XMINT3 relatePosition, DirectX::XMINT3* hitResult, DirectX::XMINT3* surfaceHit)
+bool ClientChunk::CastRay(RTU::Ray ray, glm::i32vec3 relatePosition, glm::i32vec3* hitResult, glm::i32vec3* surfaceHit)
 {
 	if (FLOAT3Equal(ray.StartPoint, ray.EndPoint))return false;
 	auto _1 = MathSub(m_chunk.m_position, relatePosition);
-	XMVECTOR s1 = XMLoadSInt3(&_1);
+	XMVECTOR s1 = XMLoadSInt3((XMINT3*)&_1);
 
 	XMVECTOR p1 = XMLoadFloat3(&ray.StartPoint) - s1;
 	XMVECTOR p2 = XMLoadFloat3(&ray.EndPoint) - s1;
@@ -44,10 +44,10 @@ bool ClientChunk::CastRay(RTU::Ray ray, XMINT3 relatePosition, DirectX::XMINT3* 
 
 	XMFLOAT3 sign1;
 	XMStoreFloat3(&sign1, dir);
-	XMINT3 sign2 = { (sign1.x < 0) ? -1 : 1,(sign1.y < 0) ? -1 : 1,(sign1.z < 0) ? -1 : 1, };
+	glm::i32vec3 sign2 = { (sign1.x < 0) ? -1 : 1,(sign1.y < 0) ? -1 : 1,(sign1.z < 0) ? -1 : 1, };
 
 	XMVECTOR closestHit;
-	XMINT3 scanPos;
+	glm::i32vec3 scanPos;
 	if (!(XMVector3LessOrEqual(p1, pos2) && XMVector3GreaterOrEqual(p1, pos1)))
 	{
 		XMVECTOR planes[] =
@@ -75,29 +75,29 @@ bool ClientChunk::CastRay(RTU::Ray ray, XMINT3 relatePosition, DirectX::XMINT3* 
 			return false;
 
 		pos1 = XMVectorClamp(XMVectorFloor(closestHit), XMVECTORF32{}, XMVECTORF32{ 15,15,15 });
-		XMStoreSInt3(&scanPos, pos1);
+		XMStoreSInt3((XMINT3*)&scanPos, pos1);
 		if (m_chunk.m_data[scanPos.z][scanPos.y][scanPos.x] & ray.filterMask)
 		{
 			*hitResult = MathAdd(scanPos, m_chunk.m_position);
 			switch (face)
 			{
 			case 0:
-				*surfaceHit = MathAdd(*hitResult, XMINT3(-1, 0, 0));
+				*surfaceHit = MathAdd(*hitResult, glm::i32vec3(-1, 0, 0));
 				break;
 			case 1:
-				*surfaceHit = MathAdd(*hitResult, XMINT3(0, -1, 0));
+				*surfaceHit = MathAdd(*hitResult, glm::i32vec3(0, -1, 0));
 				break;
 			case 2:
-				*surfaceHit = MathAdd(*hitResult, XMINT3(0, 0, -1));
+				*surfaceHit = MathAdd(*hitResult, glm::i32vec3(0, 0, -1));
 				break;
 			case 3:
-				*surfaceHit = MathAdd(*hitResult, XMINT3(1, 0, 0));
+				*surfaceHit = MathAdd(*hitResult, glm::i32vec3(1, 0, 0));
 				break;
 			case 4:
-				*surfaceHit = MathAdd(*hitResult, XMINT3(0, 1, 0));
+				*surfaceHit = MathAdd(*hitResult, glm::i32vec3(0, 1, 0));
 				break;
 			case 5:
-				*surfaceHit = MathAdd(*hitResult, XMINT3(0, 0, 1));
+				*surfaceHit = MathAdd(*hitResult, glm::i32vec3(0, 0, 1));
 				break;
 			}
 
@@ -107,7 +107,7 @@ bool ClientChunk::CastRay(RTU::Ray ray, XMINT3 relatePosition, DirectX::XMINT3* 
 	else
 	{
 		pos1 = XMVectorClamp(XMVectorFloor(p1), XMVECTORF32{}, XMVECTORF32{ 15,15,15 });
-		XMStoreSInt3(&scanPos, pos1);
+		XMStoreSInt3((XMINT3*)&scanPos, pos1);
 	}
 
 
@@ -150,9 +150,9 @@ bool ClientChunk::CastRay(RTU::Ray ray, XMINT3 relatePosition, DirectX::XMINT3* 
 	return false;
 }
 
-bool ClientChunk::TryGetBlock(DirectX::XMINT3 position, std::uint32_t* result)
+bool ClientChunk::TryGetBlock(glm::i32vec3 position, std::uint32_t* result)
 {
-	XMINT3 a = MathSub(position, m_chunk.m_position);
+	glm::i32vec3 a = MathSub(position, m_chunk.m_position);
 	if (a.x < 0 || a.y < 0 || a.z < 0 || a.x>15 || a.y>15 || a.z>15)
 		return false;
 	*result = m_chunk.m_data[a.z][a.y][a.x];

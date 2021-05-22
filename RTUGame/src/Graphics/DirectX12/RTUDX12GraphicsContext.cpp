@@ -82,10 +82,9 @@ void RTUDX12GraphicsContext::Init(IRTUGraphicsDevice* _device)
 	ThrowIfFailed(m_commandList->Close());
 }
 
-void RTUDX12GraphicsContext::SetHeapDefault(IRTUGraphicsDevice* _device)
+void RTUDX12GraphicsContext::SetHeapDefault()
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
-	ID3D12DescriptorHeap* heaps[] = { device->m_cbvsrvuavHeap.Get() };
+	ID3D12DescriptorHeap* heaps[] = { m_device->m_cbvsrvuavHeap.Get() };
 	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 }
 
@@ -95,20 +94,19 @@ void RTUDX12GraphicsContext::SetGraphicsRootSignature(IRTURootSignature* _signat
 	m_commandList->SetGraphicsRootSignature(signature->m_rootSignature.Get());
 }
 
-void RTUDX12GraphicsContext::SetRenderTargetScreen(IRTUGraphicsDevice* _device, IRTURenderTexture2D* _dsv)
+void RTUDX12GraphicsContext::SetRenderTargetScreen(IRTURenderTexture2D* _dsv)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
 	RTUDX12RenderTexture2D* dsv = static_cast<RTUDX12RenderTexture2D*>(_dsv);
-	D3D12_VIEWPORT viewport = device->m_screenViewport;
+	D3D12_VIEWPORT viewport = m_device->m_screenViewport;
 	D3D12_RECT scissorRect = { 0, 0, static_cast<LONG>(viewport.Width), static_cast<LONG>(viewport.Height) };
 	m_commandList->RSSetViewports(1, &viewport);
 	m_commandList->RSSetScissorRects(1, &scissorRect);
-	auto screenRenderTargetView = device->GetRenderTargetView();
+	auto screenRenderTargetView = m_device->GetRenderTargetView();
 	if (dsv != nullptr)
 	{
 		_CommonBarrier(dsv->m_previousResourceStates, D3D12_RESOURCE_STATE_DEPTH_WRITE, dsv->m_texture.Get(), m_commandList.Get());
 
-		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(device->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), dsv->m_dsvRef, device->m_dsvDescriptorSize);
+		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_device->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), dsv->m_dsvRef, m_device->m_dsvDescriptorSize);
 		m_commandList->OMSetRenderTargets(1, &screenRenderTargetView, false, &dsvHandle);
 	}
 	else
@@ -117,9 +115,8 @@ void RTUDX12GraphicsContext::SetRenderTargetScreen(IRTUGraphicsDevice* _device, 
 	}
 }
 
-void RTUDX12GraphicsContext::SetRenderTargetDSV(IRTUGraphicsDevice* _device, IRTURenderTexture2D* _dsv)
+void RTUDX12GraphicsContext::SetRenderTargetDSV(IRTURenderTexture2D* _dsv)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
 	RTUDX12RenderTexture2D* dsv = static_cast<RTUDX12RenderTexture2D*>(_dsv);
 	D3D12_VIEWPORT viewport = CD3DX12_VIEWPORT(
 		0.0f,
@@ -132,14 +129,13 @@ void RTUDX12GraphicsContext::SetRenderTargetDSV(IRTUGraphicsDevice* _device, IRT
 	m_commandList->RSSetScissorRects(1, &scissorRect);
 	_CommonBarrier(dsv->m_previousResourceStates, D3D12_RESOURCE_STATE_DEPTH_WRITE, dsv->m_texture.Get(), m_commandList.Get());
 
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(device->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), dsv->m_dsvRef, device->m_dsvDescriptorSize);
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_device->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), dsv->m_dsvRef, m_device->m_dsvDescriptorSize);
 
 	m_commandList->OMSetRenderTargets(0, nullptr, false, &dsvHandle);
 }
 
-void RTUDX12GraphicsContext::SetRenderTargetRTVDSV(IRTUGraphicsDevice* _device, IRTURenderTexture2D** _rtv, int rtvCount, IRTURenderTexture2D* _dsv)
+void RTUDX12GraphicsContext::SetRenderTargetRTVDSV(IRTURenderTexture2D** _rtv, int rtvCount, IRTURenderTexture2D* _dsv)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
 	RTUDX12RenderTexture2D** rtv = (RTUDX12RenderTexture2D**)(_rtv);
 	RTUDX12RenderTexture2D* dsv = static_cast<RTUDX12RenderTexture2D*>(_dsv);
 	D3D12_VIEWPORT viewport = CD3DX12_VIEWPORT(
@@ -155,19 +151,18 @@ void RTUDX12GraphicsContext::SetRenderTargetRTVDSV(IRTUGraphicsDevice* _device, 
 		_CommonBarrier((*rtv[i]).m_previousResourceStates, D3D12_RESOURCE_STATE_RENDER_TARGET, (*rtv[i]).m_texture.Get(), m_commandList.Get());
 	_CommonBarrier(dsv->m_previousResourceStates, D3D12_RESOURCE_STATE_DEPTH_WRITE, dsv->m_texture.Get(), m_commandList.Get());
 
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(device->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), dsv->m_dsvRef, device->m_dsvDescriptorSize);
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_device->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), dsv->m_dsvRef, m_device->m_dsvDescriptorSize);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs1[8] = {};
 	for (int i = 0; i < rtvCount; i++)
 	{
-		rtvs1[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(device->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), (*rtv[i]).m_rtvRef, device->m_rtvDescriptorSize);
+		rtvs1[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_device->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), (*rtv[i]).m_rtvRef, m_device->m_rtvDescriptorSize);
 	}
 	m_commandList->OMSetRenderTargets(rtvCount, rtvs1, false, &dsvHandle);
 }
 
-void RTUDX12GraphicsContext::SetRenderTargetRTV(IRTUGraphicsDevice* _device, IRTURenderTexture2D** _rtv, int rtvCount)
+void RTUDX12GraphicsContext::SetRenderTargetRTV(IRTURenderTexture2D** _rtv, int rtvCount)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
 	RTUDX12RenderTexture2D** rtv = (RTUDX12RenderTexture2D**)(_rtv);
 	D3D12_VIEWPORT viewport = CD3DX12_VIEWPORT(
 		0.0f,
@@ -184,14 +179,13 @@ void RTUDX12GraphicsContext::SetRenderTargetRTV(IRTUGraphicsDevice* _device, IRT
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs1[8] = {};
 	for (int i = 0; i < rtvCount; i++)
 	{
-		rtvs1[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(device->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), (*rtv[i]).m_rtvRef, device->m_rtvDescriptorSize);
+		rtvs1[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_device->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), (*rtv[i]).m_rtvRef, m_device->m_rtvDescriptorSize);
 	}
 	m_commandList->OMSetRenderTargets(rtvCount, rtvs1, false, nullptr);
 }
 
-void RTUDX12GraphicsContext::SetPipelineState(IRTUGraphicsDevice* _device, IRTURootSignature* _rootSignature, IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
+void RTUDX12GraphicsContext::SetPipelineState(IRTURootSignature* _rootSignature, IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
 	RTUDX12RootSignature* rootSignature = static_cast<RTUDX12RootSignature*>(_rootSignature);
 	RTUDX12PipelineState* pipelineState = static_cast<RTUDX12PipelineState*>(_pipelineState);
 
@@ -232,7 +226,7 @@ void RTUDX12GraphicsContext::SetPipelineState(IRTUGraphicsDevice* _device, IRTUR
 			stateDesc.RTVFormats[i] = desc->rtvFormat;
 		}
 		stateDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_FILL_MODE_SOLID, D3D12_CULL_MODE_BACK, false, desc->depthBias, 0.0f, 0.0f, true, false, false, 0, D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF);
-		ThrowIfFailed(device->GetD3DDevice()->CreateGraphicsPipelineState(&stateDesc, IID_PPV_ARGS(&state1)));
+		ThrowIfFailed(m_device->GetD3DDevice()->CreateGraphicsPipelineState(&stateDesc, IID_PPV_ARGS(&state1)));
 
 		pipelineState->m_psoDescs.emplace_back(*desc);
 		pipelineState->m_pipelineStates.emplace_back(state1);
@@ -250,6 +244,7 @@ void RTUDX12GraphicsContext::SetMesh(IRTUMesh* _mesh)
 	RTUDX12Mesh* mesh = static_cast<RTUDX12Mesh*> (_mesh);
 	m_commandList->IASetVertexBuffers(0, 1, &mesh->m_vertexBufferView);
 	m_commandList->IASetIndexBuffer(&mesh->m_indexBufferView);
+	mesh->m_lastRefFrame = m_device->m_currentFenceValue;
 }
 
 void RTUDX12GraphicsContext::SetCBVR(IRTUCBuffer* _buffer, int syncIndex, int offset256, int size256, int slot)
@@ -313,80 +308,20 @@ void RTUDX12GraphicsContext::UpdateBuffer(IRTUSBuffer* _buffer, int syncIndex, v
 	m_commandList->ResourceBarrier(1, &barrier1);
 }
 
-void RTUDX12GraphicsContext::UploadMesh(IRTUGraphicsDevice* _device, IRTUMesh* _mesh, RTUMeshLoader* loader)
+void RTUDX12GraphicsContext::UploadMesh(IRTUMesh* _mesh, RTUMeshLoader* loader)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
 	RTUDX12Mesh* mesh = static_cast<RTUDX12Mesh*> (_mesh);
 	auto uploadHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto defaultHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-#define _TEST_SINGLE_MESH_BUFFER
-#ifndef _TEST_SINGLE_MESH_BUFFER
-	auto bufferDescVertexBuffer = CD3DX12_RESOURCE_DESC::Buffer(loader->m_vertexData.size());
-	auto bufferDescIndexBuffer = CD3DX12_RESOURCE_DESC::Buffer(loader->m_indexData.size());
-	auto bufferDescUploaderBuffer = CD3DX12_RESOURCE_DESC::Buffer(loader->m_vertexData.size() + loader->m_indexData.size());
-	ThrowIfFailed(device->GetD3DDevice()->CreateCommittedResource(
-		&defaultHeap,
-		D3D12_HEAP_FLAG_NONE,
-		&bufferDescVertexBuffer,
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		nullptr,
-		IID_PPV_ARGS(&mesh->m_vertex)
-	));
-	NAME_D3D12_OBJECT(mesh->m_vertex);
-	ThrowIfFailed(device->GetD3DDevice()->CreateCommittedResource(
-		&defaultHeap,
-		D3D12_HEAP_FLAG_NONE,
-		&bufferDescIndexBuffer,
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		nullptr,
-		IID_PPV_ARGS(&mesh->m_index)
-	));
-	NAME_D3D12_OBJECT(mesh->m_index);
-	ThrowIfFailed(device->GetD3DDevice()->CreateCommittedResource(
-		&uploadHeap,
-		D3D12_HEAP_FLAG_NONE,
-		&bufferDescUploaderBuffer,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&loader->m_vertex)
-	));
-	NAME_D3D12_OBJECT(loader->m_vertex);
-
-	char* mapped = nullptr;
-	CD3DX12_RANGE readRange(0, 0);
-	ThrowIfFailed(loader->m_vertex->Map(0, &readRange, reinterpret_cast<void**>(&mapped)));
-	size_t offset = 0;
-
-	memcpy(mapped, loader->m_vertexData.data(), loader->m_vertexData.size());
-	m_commandList->CopyBufferRegion(mesh->m_vertex.Get(), 0, loader->m_vertex.Get(), offset, loader->m_vertexData.size());
-	offset += loader->m_vertexData.size();
-
-	memcpy(mapped + offset, loader->m_indexData.data(), loader->m_indexData.size());
-	m_commandList->CopyBufferRegion(mesh->m_index.Get(), 0, loader->m_vertex.Get(), offset, loader->m_indexData.size());
-	offset += loader->m_indexData.size();
-
-	loader->m_vertex->Unmap(0, nullptr);
-	mapped = nullptr;
-
-
-	D3D12_RESOURCE_BARRIER barriers[] = { CD3DX12_RESOURCE_BARRIER::Transition(mesh->m_vertex.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ),
-	 CD3DX12_RESOURCE_BARRIER::Transition(mesh->m_index.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ) };
-	m_commandList->ResourceBarrier(2, barriers);
-
-	mesh->m_vertexBufferView.BufferLocation = mesh->m_vertex->GetGPUVirtualAddress();
-	mesh->m_vertexBufferView.StrideInBytes = loader->m_vertexStride;
-	mesh->m_vertexBufferView.SizeInBytes = loader->m_vertexData.size();
-
-	mesh->m_indexBufferView.BufferLocation = mesh->m_index->GetGPUVirtualAddress();
-	mesh->m_indexBufferView.SizeInBytes = loader->m_indexData.size();
-	mesh->m_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-#else
 	size_t vertexSizeA = (loader->m_vertexData.size() + 255) & ~255;
 	size_t indexSizeA = (loader->m_indexData.size() + 255) & ~255;
 	auto bufferDescVertexBuffer = CD3DX12_RESOURCE_DESC::Buffer(vertexSizeA + indexSizeA);
 	auto bufferDescUploaderBuffer = CD3DX12_RESOURCE_DESC::Buffer(vertexSizeA + indexSizeA);
 
-	ThrowIfFailed(device->GetD3DDevice()->CreateCommittedResource(
+	ComPtr<ID3D12Resource> vertexUploadBuffer;
+
+	m_device->m_recycleList.push_back(d3d12RecycleResource{ mesh->m_vertex,m_device->m_currentFenceValue });
+	ThrowIfFailed(m_device->GetD3DDevice()->CreateCommittedResource(
 		&defaultHeap,
 		D3D12_HEAP_FLAG_NONE,
 		&bufferDescVertexBuffer,
@@ -395,30 +330,33 @@ void RTUDX12GraphicsContext::UploadMesh(IRTUGraphicsDevice* _device, IRTUMesh* _
 		IID_PPV_ARGS(&mesh->m_vertex)
 	));
 	NAME_D3D12_OBJECT(mesh->m_vertex);
-	ThrowIfFailed(device->GetD3DDevice()->CreateCommittedResource(
+	ThrowIfFailed(m_device->GetD3DDevice()->CreateCommittedResource(
 		&uploadHeap,
 		D3D12_HEAP_FLAG_NONE,
 		&bufferDescUploaderBuffer,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(&loader->m_vertex)
+		IID_PPV_ARGS(&vertexUploadBuffer)
 	));
-	NAME_D3D12_OBJECT(loader->m_vertex);
+	NAME_D3D12_OBJECT(vertexUploadBuffer);
 
 	char* mapped = nullptr;
 	CD3DX12_RANGE readRange(0, 0);
-	ThrowIfFailed(loader->m_vertex->Map(0, &readRange, reinterpret_cast<void**>(&mapped)));
+	ThrowIfFailed(vertexUploadBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mapped)));
 	size_t offset = 0;
 
 	memcpy(mapped, loader->m_vertexData.data(), loader->m_vertexData.size());
 	offset += vertexSizeA;
 	memcpy(mapped + offset, loader->m_indexData.data(), loader->m_indexData.size());
 	offset += indexSizeA;
-	m_commandList->CopyBufferRegion(mesh->m_vertex.Get(), 0, loader->m_vertex.Get(), 0, vertexSizeA + indexSizeA);
+	m_commandList->CopyBufferRegion(mesh->m_vertex.Get(), 0, vertexUploadBuffer.Get(), 0, vertexSizeA + indexSizeA);
 
-	loader->m_vertex->Unmap(0, nullptr);
+	vertexUploadBuffer->Unmap(0, nullptr);
 	mapped = nullptr;
 
+
+	m_device->m_recycleList.push_back(d3d12RecycleResource{ vertexUploadBuffer,m_device->m_currentFenceValue });
+	//device->m_recycleList.push_back(d3d12RecycleResource{ indexUploadBuffer,m_device->m_currentFenceValue });
 
 	D3D12_RESOURCE_BARRIER barriers[] = { CD3DX12_RESOURCE_BARRIER::Transition(mesh->m_vertex.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ) };
 	m_commandList->ResourceBarrier(1, barriers);
@@ -430,20 +368,20 @@ void RTUDX12GraphicsContext::UploadMesh(IRTUGraphicsDevice* _device, IRTUMesh* _
 	mesh->m_indexBufferView.BufferLocation = mesh->m_vertex->GetGPUVirtualAddress() + vertexSizeA;
 	mesh->m_indexBufferView.SizeInBytes = loader->m_indexData.size();
 	mesh->m_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-#endif
+
+	mesh->m_lastRefFrame = m_device->m_currentFenceValue;
 	mesh->m_states = RTU_STATES::RTU_STATES_LOADED;
 }
 
-void RTUDX12GraphicsContext::UploadTexture(IRTUGraphicsDevice* _device, IRTUTexture2D* _texture, RTUTexture2DLoader* loader)
+void RTUDX12GraphicsContext::UploadTexture(IRTUTexture2D* _texture, RTUTexture2DLoader* loader)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
 	RTUDX12Texture2D* texture = static_cast<RTUDX12Texture2D*>(_texture);
 #ifdef _DEBUG
 	texture->dbg_width = loader->m_width;
 	texture->dbg_height = loader->m_height;
 	texture->dbg_mipLevels = loader->m_mipLevels;
 #endif
-	auto d3dDevice = device->GetD3DDevice();
+	auto d3dDevice = m_device->GetD3DDevice();
 
 	auto uploadHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto defaultHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -468,6 +406,7 @@ void RTUDX12GraphicsContext::UploadTexture(IRTUGraphicsDevice* _device, IRTUText
 		IID_PPV_ARGS(&texture->m_texture)));
 	NAME_D3D12_OBJECT(texture->m_texture);
 
+	ComPtr<ID3D12Resource> uploadBuffer;
 	auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(loader->m_data.size());
 	ThrowIfFailed(d3dDevice->CreateCommittedResource(
 		&uploadHeap,
@@ -475,7 +414,9 @@ void RTUDX12GraphicsContext::UploadTexture(IRTUGraphicsDevice* _device, IRTUText
 		&bufferDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(&loader->m_texture)));
+		IID_PPV_ARGS(&uploadBuffer)));
+
+	m_device->m_recycleList.push_back(d3d12RecycleResource{ uploadBuffer,m_device->m_currentFenceValue });
 
 	std::vector<D3D12_SUBRESOURCE_DATA>subresources;
 	subresources.reserve(textureDesc.MipLevels);
@@ -497,41 +438,38 @@ void RTUDX12GraphicsContext::UploadTexture(IRTUGraphicsDevice* _device, IRTUText
 		height /= 2;
 	}
 
-	UpdateSubresources(m_commandList.Get(), texture->m_texture.Get(), loader->m_texture.Get(), 0, 0, textureDesc.MipLevels, subresources.data());
+	UpdateSubresources(m_commandList.Get(), texture->m_texture.Get(), uploadBuffer.Get(), 0, 0, textureDesc.MipLevels, subresources.data());
 
 	auto barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(texture->m_texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
 	m_commandList->ResourceBarrier(1, &barrier1);
-	texture->m_srvRef = _InterlockedIncrement(&device->m_cbvsrvuavHeapAllocCount) - 1;
+	texture->m_srvRef = _InterlockedIncrement(&m_device->m_cbvsrvuavHeapAllocCount) - 1;
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Format = textureDesc.Format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = textureDesc.MipLevels;
-	d3dDevice->CreateShaderResourceView(texture->m_texture.Get(), &srvDesc, CD3DX12_CPU_DESCRIPTOR_HANDLE(device->m_cbvsrvuavHeap->GetCPUDescriptorHandleForHeapStart(), device->m_cbvsrvuavDescriptorSize * texture->m_srvRef));
+	d3dDevice->CreateShaderResourceView(texture->m_texture.Get(), &srvDesc, CD3DX12_CPU_DESCRIPTOR_HANDLE(m_device->m_cbvsrvuavHeap->GetCPUDescriptorHandleForHeapStart(), m_device->m_cbvsrvuavDescriptorSize * texture->m_srvRef));
 	texture->m_states = RTU_STATES::RTU_STATES_LOADED;
 }
 
-void RTUDX12GraphicsContext::ClearScreen(IRTUGraphicsDevice* _device, const float* color)
+void RTUDX12GraphicsContext::ClearScreen(const float* color)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
-	m_commandList->ClearRenderTargetView(device->GetRenderTargetView(), color, 0, nullptr);
+	m_commandList->ClearRenderTargetView(m_device->GetRenderTargetView(), color, 0, nullptr);
 }
 
-void RTUDX12GraphicsContext::ClearRTV(IRTUGraphicsDevice* _device, IRTURenderTexture2D* _rtv, const float* color)
+void RTUDX12GraphicsContext::ClearRTV(IRTURenderTexture2D* _rtv, const float* color)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
 	RTUDX12RenderTexture2D* rtv = static_cast<RTUDX12RenderTexture2D*>(_rtv);
 	_CommonBarrier(rtv->m_previousResourceStates, D3D12_RESOURCE_STATE_RENDER_TARGET, rtv->m_texture.Get(), m_commandList.Get());
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(device->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), rtv->m_rtvRef, device->m_rtvDescriptorSize);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_device->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), rtv->m_rtvRef, m_device->m_rtvDescriptorSize);
 	m_commandList->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
 }
 
-void RTUDX12GraphicsContext::ClearDSV(IRTUGraphicsDevice* _device, IRTURenderTexture2D* _dsv)
+void RTUDX12GraphicsContext::ClearDSV(IRTURenderTexture2D* _dsv)
 {
-	RTUDX12GraphicsDevice* device = static_cast<RTUDX12GraphicsDevice*>(_device);
 	RTUDX12RenderTexture2D* dsv = static_cast<RTUDX12RenderTexture2D*>(_dsv);
 	_CommonBarrier(dsv->m_previousResourceStates, D3D12_RESOURCE_STATE_DEPTH_WRITE, dsv->m_texture.Get(), m_commandList.Get());
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(device->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), dsv->m_dsvRef, device->m_dsvDescriptorSize);
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_device->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), dsv->m_dsvRef, m_device->m_dsvDescriptorSize);
 	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 

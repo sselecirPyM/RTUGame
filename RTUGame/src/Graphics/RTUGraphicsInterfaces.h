@@ -75,6 +75,7 @@ public:
 	virtual void InitBuffer(IRTUCBuffer* buffer, uint32_t size) = 0;
 	virtual void InitBuffer(IRTUSBuffer* buffer, uint32_t size) = 0;
 	virtual void InitRenderTexture2D(IRTURenderTexture2D* texture, int width, int height) = 0;
+	virtual void RemoveMesh(IRTUMesh* mesh) = 0;
 	virtual void Uninit() = 0;
 	virtual int GetExecuteIndex() = 0;
 	virtual uint64_t GetExecutedCount() = 0;
@@ -84,13 +85,13 @@ class IRTUGraphicsContext
 {
 public:
 	virtual void Init(IRTUGraphicsDevice* device) = 0;
-	virtual void SetHeapDefault(IRTUGraphicsDevice* device) = 0;
+	virtual void SetHeapDefault() = 0;
 	virtual void SetGraphicsRootSignature(IRTURootSignature* signature) = 0;
-	virtual void SetRenderTargetScreen(IRTUGraphicsDevice* device, IRTURenderTexture2D* dsv) = 0;
-	virtual void SetRenderTargetDSV(IRTUGraphicsDevice* device, IRTURenderTexture2D* dsv) = 0;
-	virtual void SetRenderTargetRTVDSV(IRTUGraphicsDevice* device, IRTURenderTexture2D** rtv, int rtvCount, IRTURenderTexture2D* dsv) = 0;
-	virtual void SetRenderTargetRTV(IRTUGraphicsDevice* device, IRTURenderTexture2D** rtv, int rtvCount) = 0;
-	virtual void SetPipelineState(IRTUGraphicsDevice* device, IRTURootSignature* rootSignature, IRTUPipelineState* pipelineState, RTUPipelineStateDesc* desc) = 0;
+	virtual void SetRenderTargetScreen(IRTURenderTexture2D* dsv) = 0;
+	virtual void SetRenderTargetDSV(IRTURenderTexture2D* dsv) = 0;
+	virtual void SetRenderTargetRTVDSV(IRTURenderTexture2D** rtv, int rtvCount, IRTURenderTexture2D* dsv) = 0;
+	virtual void SetRenderTargetRTV(IRTURenderTexture2D** rtv, int rtvCount) = 0;
+	virtual void SetPipelineState(IRTURootSignature* rootSignature, IRTUPipelineState* pipelineState, RTUPipelineStateDesc* desc) = 0;
 	virtual void SetMesh(IRTUMesh* mesh) = 0;
 	virtual void SetCBVR(IRTUCBuffer* buffer, int syncIndex, int offset256, int size256, int slot) = 0;
 	virtual void SetCBVR(IRTUSBuffer* buffer, int syncIndex, int offset256, int size256, int slot) = 0;
@@ -100,11 +101,11 @@ public:
 	virtual void DrawIndexedInstanced(int indexCount, int startIndexLocation, int baseVertexLocation, int instanceCount, int startInstanceLocation) = 0;
 	virtual void UpdateBuffer(IRTUCBuffer* buffer, int syncIndex, void* data, int dataSize) = 0;
 	virtual void UpdateBuffer(IRTUSBuffer* buffer, int syncIndex, void* data, int dataSize) = 0;
-	virtual void UploadMesh(IRTUGraphicsDevice* device, IRTUMesh* mesh, RTUMeshLoader* loader) = 0;
-	virtual void UploadTexture(IRTUGraphicsDevice* device, IRTUTexture2D* texture, RTUTexture2DLoader* loader) = 0;
-	virtual void ClearScreen(IRTUGraphicsDevice* device, const float* color) = 0;
-	virtual void ClearRTV(IRTUGraphicsDevice* device, IRTURenderTexture2D* rtv, const float* color) = 0;
-	virtual void ClearDSV(IRTUGraphicsDevice* device, IRTURenderTexture2D* dsv) = 0;
+	virtual void UploadMesh(IRTUMesh* mesh, RTUMeshLoader* loader) = 0;
+	virtual void UploadTexture(IRTUTexture2D* texture, RTUTexture2DLoader* loader) = 0;
+	virtual void ClearScreen(const float* color) = 0;
+	virtual void ClearRTV(IRTURenderTexture2D* rtv, const float* color) = 0;
+	virtual void ClearDSV(IRTURenderTexture2D* dsv) = 0;
 	virtual void ScreenBeginRender() = 0;
 	virtual void ScreenEndRender() = 0;
 	virtual void BeginCommand(IRTUGraphicsDevice* device) = 0;

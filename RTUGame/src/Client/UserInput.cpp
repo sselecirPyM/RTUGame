@@ -163,9 +163,9 @@ void UserInput::Process(ClientContext* context, AppMessages* messages)
 	position -= p1;
 	XMStoreFloat3(&playerInfo.m_currentSpeed, speed);
 	XMStoreFloat3(&playerInfo.m_position_f, position);
-	XMINT3 deltaPos_i;
+	glm::i32vec3 deltaPos_i;
 	XMFLOAT3 deltaPos_if;
-	XMStoreSInt3(&deltaPos_i, p1);
+	XMStoreSInt3((XMINT3*)&deltaPos_i, p1);
 	XMStoreFloat3(&deltaPos_if, p1);
 	playerInfo.m_position_i = MathAdd(playerInfo.m_position_i, deltaPos_i);
 	context->m_physicsDevice->SceneShiftOrigin(context->m_physicsScene.get(), glm::vec3(deltaPos_if.x, deltaPos_if.y, deltaPos_if.z));

@@ -22,13 +22,13 @@ class RTUDX12GraphicsContext : public IRTUGraphicsContext
 {
 public:
 	void Init(IRTUGraphicsDevice* device);
-	void SetHeapDefault(IRTUGraphicsDevice* device);
+	void SetHeapDefault();
 	void SetGraphicsRootSignature(IRTURootSignature* signature);
-	void SetRenderTargetScreen(IRTUGraphicsDevice* device, IRTURenderTexture2D* dsv);
-	void SetRenderTargetDSV(IRTUGraphicsDevice* device, IRTURenderTexture2D* dsv);
-	void SetRenderTargetRTVDSV(IRTUGraphicsDevice* device, IRTURenderTexture2D** rtv, int rtvCount, IRTURenderTexture2D* dsv);
-	void SetRenderTargetRTV(IRTUGraphicsDevice* device, IRTURenderTexture2D** rtv, int rtvCount);
-	void SetPipelineState(IRTUGraphicsDevice* device, IRTURootSignature* rootSignature, IRTUPipelineState* pipelineState, RTUPipelineStateDesc* desc);
+	void SetRenderTargetScreen(IRTURenderTexture2D* dsv);
+	void SetRenderTargetDSV(IRTURenderTexture2D* dsv);
+	void SetRenderTargetRTVDSV(IRTURenderTexture2D** rtv, int rtvCount, IRTURenderTexture2D* dsv);
+	void SetRenderTargetRTV(IRTURenderTexture2D** rtv, int rtvCount);
+	void SetPipelineState(IRTURootSignature* rootSignature, IRTUPipelineState* pipelineState, RTUPipelineStateDesc* desc);
 	void SetMesh(IRTUMesh* mesh);
 	void SetCBVR(IRTUCBuffer* buffer, int syncIndex, int offset256, int size256, int slot);
 	void SetCBVR(IRTUSBuffer* buffer, int syncIndex, int offset256, int size256, int slot);
@@ -38,11 +38,11 @@ public:
 	void DrawIndexedInstanced(int indexCount, int startIndexLocation, int baseVertexLocation, int instanceCount, int startInstanceLocation);
 	void UpdateBuffer(IRTUCBuffer* buffer, int syncIndex, void* data, int dataSize);
 	void UpdateBuffer(IRTUSBuffer* buffer, int syncIndex, void* data, int dataSize);
-	void UploadMesh(IRTUGraphicsDevice* device, IRTUMesh* mesh, RTUMeshLoader* loader);
-	void UploadTexture(IRTUGraphicsDevice* device, IRTUTexture2D* texture, RTUTexture2DLoader* loader);
-	void ClearScreen(IRTUGraphicsDevice* device, const float* color);
-	void ClearRTV(IRTUGraphicsDevice* device, IRTURenderTexture2D* rtv, const float* color);
-	void ClearDSV(IRTUGraphicsDevice* device, IRTURenderTexture2D* dsv);
+	void UploadMesh(IRTUMesh* mesh, RTUMeshLoader* loader);
+	void UploadTexture(IRTUTexture2D* texture, RTUTexture2DLoader* loader);
+	void ClearScreen(const float* color);
+	void ClearRTV(IRTURenderTexture2D* rtv, const float* color);
+	void ClearDSV(IRTURenderTexture2D* dsv);
 	void ScreenBeginRender();
 	void ScreenEndRender();
 	void BeginCommand(IRTUGraphicsDevice* device);

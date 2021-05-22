@@ -25,8 +25,8 @@ public:
 	void Cube1();
 
 	UINT m_vertexStride;
-	ComPtr<ID3D12Resource> m_index;
-	ComPtr<ID3D12Resource> m_vertex;
+	//ComPtr<ID3D12Resource> m_index;
+	//ComPtr<ID3D12Resource> m_vertex;
 	std::vector<char> m_vertexData;
 	std::vector<char> m_indexData;
 };

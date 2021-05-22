@@ -15,7 +15,7 @@
 //along with RTU Game.If not, see < https://www.gnu.org/licenses/>.
 #pragma once
 #include "RTU_STATES.h"
-
+#include <glm/glm.hpp>
 const static unsigned int c_maxQueueFrameCount = 2;
 
 struct RTU_INT2
@@ -36,6 +36,10 @@ struct XMINT3Comparer
 	bool operator()(const DirectX::XMINT3& Left, const DirectX::XMINT3& Right) const
 	{
 		return memcmp(&Left, &Right, sizeof(DirectX::XMINT3)) < 0;
+	}
+	bool operator()(const glm::i32vec3& Left, const glm::i32vec3& Right) const
+	{
+		return memcmp(&Left, &Right, sizeof(glm::i32vec3)) < 0;
 	}
 };
 

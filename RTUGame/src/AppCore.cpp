@@ -193,7 +193,7 @@ void AppCore::RenderLoop()
 
 	m_messages.Hi.ScreenSize.x = m_width;
 	m_messages.Hi.ScreenSize.y = m_height;
-	m_renderPipelineContext.m_screenSize = XMUINT2(m_width, m_height);
+	m_renderPipelineContext.m_screenSize = glm::u32vec2(m_width, m_height);
 	m_renderPipelineContext.m_aspectRatio = float(m_width) / float(m_height);
 
 	auto& m_graphicsDevice = m_renderPipelineContext.m_graphicsDevice;

@@ -172,6 +172,10 @@ void RTUVKGraphicsDevice::InitRenderTexture2D(IRTURenderTexture2D* texture, int 
 {
 }
 
+void RTUVKGraphicsDevice::RemoveMesh(IRTUMesh* mesh)
+{
+}
+
 void RTUVKGraphicsDevice::Uninit()
 {
 }

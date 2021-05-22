@@ -215,9 +215,6 @@
     <ClCompile Include="src\Common\IncreasePerformance.cpp">
       <Filter>src\Common</Filter>
     </ClCompile>
-    <ClCompile Include="src\RenderPipeline\RenderPipelineResources.cpp">
-      <Filter>src\RenderPipeline</Filter>
-    </ClCompile>
     <ClCompile Include="src\Physics\PhysX\RTUPXStatic.cpp">
       <Filter>src\Physics\PhysX</Filter>
     </ClCompile>
@@ -448,9 +445,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\IncreasePerformance.h">
       <Filter>src\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="src\RenderPipeline\RenderPipelineResources.h">
-      <Filter>src\RenderPipeline</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\PhysX\RTUPXStatic.h">
       <Filter>src\Physics\PhysX</Filter>

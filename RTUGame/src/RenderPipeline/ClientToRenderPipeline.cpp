@@ -25,8 +25,8 @@ inline bool asyncReady(std::future<void>& _async)
 }
 void ClientToRenderPipeline::Process1(ClientContext* clientContext, RenderPipelineContext* renderPipelineContext)
 {
-	std::set<XMINT3, XMINT3Comparer>& posSet = _m_bakeMeshTaskData.posSet;
-	std::set<XMINT3, XMINT3Comparer>& posSet64 = _m_bakeMeshTaskData.posSet64;
+	std::set<glm::i32vec3, XMINT3Comparer>& posSet = _m_bakeMeshTaskData.posSet;
+	std::set<glm::i32vec3, XMINT3Comparer>& posSet64 = _m_bakeMeshTaskData.posSet64;
 	auto& preloadChunks = clientContext->m_preloadChunks;
 	if (asyncReady(m_bakeMeshTask))
 	{
@@ -35,7 +35,8 @@ void ClientToRenderPipeline::Process1(ClientContext* clientContext, RenderPipeli
 			for (size_t i = 0; i < ba1.count; i++)
 			{
 				auto& pNode = ba1.nodeList[i];
-				renderPipelineContext->m_meshRecycleList_w->emplace_back(std::move(pNode->m_mergedMesh));
+				if (pNode->m_mergedMesh)
+					renderPipelineContext->m_graphicsDevice->RemoveMesh(pNode->m_mergedMesh.get());
 				pNode->m_mergedMesh = std::move(pNode->m_mergedMesh1);
 				pNode->m_meshIndexCount = pNode->m_meshIndexCount1;
 				for (int l = 0; l < 64; l++)
@@ -68,21 +69,21 @@ void ClientToRenderPipeline::Process1(ClientContext* clientContext, RenderPipeli
 			_m_bakeMeshTaskData.Clear();
 		}
 		_m_bakeMeshTaskData.Clear();
-		int numChunkLoad = std::min(preloadChunks.size(), 32u);
+		int numChunkLoad = std::min<int>(preloadChunks.size(), 256);
 		for (int i = 0; i < numChunkLoad; i++)
 		{
 			ClientChunk* chunkPop = nullptr;
 			auto chunk = preloadChunks.front();
 			preloadChunks.pop();
 			clientContext->m_chunkScene.Add(chunk, &chunkPop);
-			XMINT3 position = chunk->m_chunk.m_position;
+			glm::i32vec3 position = chunk->m_chunk.m_position;
 			posSet.insert(position);
-			posSet.insert(MathAdd(position, XMINT3(-16, 0, 0)));
-			posSet.insert(MathAdd(position, XMINT3(16, 0, 0)));
-			posSet.insert(MathAdd(position, XMINT3(0, -16, 0)));
-			posSet.insert(MathAdd(position, XMINT3(0, 16, 0)));
-			posSet.insert(MathAdd(position, XMINT3(0, 0, -16)));
-			posSet.insert(MathAdd(position, XMINT3(0, 0, 16)));
+			posSet.insert(MathAdd(position, glm::i32vec3(-16, 0, 0)));
+			posSet.insert(MathAdd(position, glm::i32vec3(16, 0, 0)));
+			posSet.insert(MathAdd(position, glm::i32vec3(0, -16, 0)));
+			posSet.insert(MathAdd(position, glm::i32vec3(0, 16, 0)));
+			posSet.insert(MathAdd(position, glm::i32vec3(0, 0, -16)));
+			posSet.insert(MathAdd(position, glm::i32vec3(0, 0, 16)));
 
 			if (chunkPop != nullptr)
 			{
@@ -97,7 +98,7 @@ void ClientToRenderPipeline::Process1(ClientContext* clientContext, RenderPipeli
 	}
 }
 
-inline void _CullResult(ChunkScene& tree, XMMATRIX& vMatrix, XMMATRIX& pMatrix, XMINT3& cameraPosI, std::vector<DrawContainer0>& cullResult)
+inline void _CullResult(ChunkScene& tree, XMMATRIX& vMatrix, XMMATRIX& pMatrix, glm::i32vec3& cameraPosI, std::vector<DrawContainer0>& cullResult)
 {
 	FrustumCull frustum1;
 	frustum1.Init(vMatrix, pMatrix);
@@ -129,29 +130,29 @@ void ClientToRenderPipeline::Process2(ClientContext* clientContext, RenderPipeli
 	ray.StartPoint = dcw->m_cameraData.camPos_f;
 	ray.length = 8;
 	XMStoreFloat3(&ray.EndPoint, cameraPosition + (testPoint * ray.length));
-	XMINT3 hitResult;
-	XMINT3 hitSurface;
+	glm::i32vec3 hitResult;
+	glm::i32vec3 hitSurface;
 
 	if (clientContext->m_chunkScene.CastRay(ray, dcw->m_cameraData.camPos_i, &hitResult, &hitSurface))
 	{
 		auto _1 = MathSub(hitSurface, dcw->m_cameraData.camPos_i);
 		XMFLOAT4X4 matrix;
-		XMStoreFloat4x4(&matrix, XMMatrixTranspose(XMMatrixTranslationFromVector(XMLoadSInt3(&_1))));
-		dcw->m_anotherRenderList.push_back(DrawContainer1(renderPipelineContext->m_cubeModel1.get(), matrix, renderPipelineContext->m_renderPipelineResources.m_deferred_gbuffer.get()));
+		XMStoreFloat4x4(&matrix, XMMatrixTranspose(XMMatrixTranslationFromVector(XMLoadSInt3((XMINT3*)&_1))));
+		dcw->m_anotherRenderList.push_back(DrawContainer1(renderPipelineContext->m_meshes["cube"].get(), matrix, renderPipelineContext->m_pipelineStates["deferred_gbuffer"].get()));
 	}
 }
 
 void ClientToRenderPipeline::Process1_1(ClientContext* clientContext, RenderPipelineContext* renderPipelineContext)
 {
-	std::set<XMINT3, XMINT3Comparer>& posSet = _m_bakeMeshTaskData.posSet;
-	std::set<XMINT3, XMINT3Comparer>& posSet64 = _m_bakeMeshTaskData.posSet64;
+	std::set<glm::i32vec3, XMINT3Comparer>& posSet = _m_bakeMeshTaskData.posSet;
+	std::set<glm::i32vec3, XMINT3Comparer>& posSet64 = _m_bakeMeshTaskData.posSet64;
 	{
 		struct _MeshCacheBakeTask
 		{
-			std::vector<XMINT3> _xList;
+			std::vector<glm::i32vec3> _xList;
 			ClientContext* _clientContext;
 			size_t count;
-			_MeshCacheBakeTask(std::set<XMINT3, XMINT3Comparer> set1, ClientContext* clientContext)
+			_MeshCacheBakeTask(std::set<glm::i32vec3, XMINT3Comparer> set1, ClientContext* clientContext)
 			{
 				_clientContext = clientContext;
 				for (auto it = set1.begin(); it != set1.end(); it++)

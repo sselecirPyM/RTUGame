@@ -195,7 +195,7 @@ inline void _unknowFun(ClientContext* _context, _FaceData faceData, ClientChunk*
 	}
 }
 
-bool ClientContext::BakeMeshCache(XMINT3 chunkPos)
+bool ClientContext::BakeMeshCache(glm::i32vec3 chunkPos)
 {
 	ClientChunk* pChunk = nullptr;
 	if (!m_chunkScene.TryGetChunk(chunkPos, &pChunk))return false;
@@ -226,12 +226,12 @@ bool ClientContext::BakeMeshCache(XMINT3 chunkPos)
 
 	auto& pChunkNearby = faceData.pChunkNearby;
 
-	m_chunkScene.TryGetChunk(MathAdd(chunkPos, XMINT3(-16, 0, 0)), &pChunkNearby[0]);
-	m_chunkScene.TryGetChunk(MathAdd(chunkPos, XMINT3(16, 0, 0)), &pChunkNearby[1]);
-	m_chunkScene.TryGetChunk(MathAdd(chunkPos, XMINT3(0, -16, 0)), &pChunkNearby[2]);
-	m_chunkScene.TryGetChunk(MathAdd(chunkPos, XMINT3(0, 16, 0)), &pChunkNearby[3]);
-	m_chunkScene.TryGetChunk(MathAdd(chunkPos, XMINT3(0, 0, -16)), &pChunkNearby[4]);
-	m_chunkScene.TryGetChunk(MathAdd(chunkPos, XMINT3(0, 0, 16)), &pChunkNearby[5]);
+	m_chunkScene.TryGetChunk(MathAdd(chunkPos, glm::i32vec3(-16, 0, 0)), &pChunkNearby[0]);
+	m_chunkScene.TryGetChunk(MathAdd(chunkPos, glm::i32vec3(16, 0, 0)), &pChunkNearby[1]);
+	m_chunkScene.TryGetChunk(MathAdd(chunkPos, glm::i32vec3(0, -16, 0)), &pChunkNearby[2]);
+	m_chunkScene.TryGetChunk(MathAdd(chunkPos, glm::i32vec3(0, 16, 0)), &pChunkNearby[3]);
+	m_chunkScene.TryGetChunk(MathAdd(chunkPos, glm::i32vec3(0, 0, -16)), &pChunkNearby[4]);
+	m_chunkScene.TryGetChunk(MathAdd(chunkPos, glm::i32vec3(0, 0, 16)), &pChunkNearby[5]);
 
 	Chunk16& m_chunk = pChunk->m_chunk;
 
@@ -287,7 +287,7 @@ bool ClientContext::BakeMeshCache(XMINT3 chunkPos)
 		return false;
 }
 
-bool ClientContext::BakeMeshFromCache(DirectX::XMINT3 chunkPos, RTUMeshLoader* loader)
+bool ClientContext::BakeMeshFromCache(glm::i32vec3 chunkPos, RTUMeshLoader* loader)
 {
 	ChunkNode_Bottom* pNode = nullptr;
 	if (!m_chunkScene.TryGetChunk(chunkPos, &pNode))return false;

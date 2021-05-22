@@ -35,7 +35,7 @@ void RTUVKGraphicsContext::Init(IRTUGraphicsDevice* _device)
     ThrowIfFailed(vkAllocateCommandBuffers(device->m_device, &cmd, &m_commandBuffer));
 }
 
-void RTUVKGraphicsContext::SetHeapDefault(IRTUGraphicsDevice* _device)
+void RTUVKGraphicsContext::SetHeapDefault()
 {
 }
 
@@ -43,23 +43,23 @@ void RTUVKGraphicsContext::SetGraphicsRootSignature(IRTURootSignature* _signatur
 {
 }
 
-void RTUVKGraphicsContext::SetRenderTargetScreen(IRTUGraphicsDevice* _device, IRTURenderTexture2D* _dsv)
+void RTUVKGraphicsContext::SetRenderTargetScreen(IRTURenderTexture2D* _dsv)
 {
 }
 
-void RTUVKGraphicsContext::SetRenderTargetDSV(IRTUGraphicsDevice* _device, IRTURenderTexture2D* _dsv)
+void RTUVKGraphicsContext::SetRenderTargetDSV(IRTURenderTexture2D* _dsv)
 {
 }
 
-void RTUVKGraphicsContext::SetRenderTargetRTVDSV(IRTUGraphicsDevice* _device, IRTURenderTexture2D** _rtv, int rtvCount, IRTURenderTexture2D* _dsv)
+void RTUVKGraphicsContext::SetRenderTargetRTVDSV(IRTURenderTexture2D** _rtv, int rtvCount, IRTURenderTexture2D* _dsv)
 {
 }
 
-void RTUVKGraphicsContext::SetRenderTargetRTV(IRTUGraphicsDevice* _device, IRTURenderTexture2D** _rtv, int rtvCount)
+void RTUVKGraphicsContext::SetRenderTargetRTV(IRTURenderTexture2D** _rtv, int rtvCount)
 {
 }
 
-void RTUVKGraphicsContext::SetPipelineState(IRTUGraphicsDevice* _device, IRTURootSignature* _rootSignature, IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
+void RTUVKGraphicsContext::SetPipelineState(IRTURootSignature* _rootSignature, IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
 {
 }
 
@@ -99,25 +99,25 @@ void RTUVKGraphicsContext::UpdateBuffer(IRTUSBuffer* _buffer, int syncIndex, voi
 {
 }
 
-void RTUVKGraphicsContext::UploadMesh(IRTUGraphicsDevice* _device, IRTUMesh* _mesh, RTUMeshLoader* loader)
+void RTUVKGraphicsContext::UploadMesh(IRTUMesh* _mesh, RTUMeshLoader* loader)
 {
     RTUVKMesh* mesh = static_cast<RTUVKMesh*>(_mesh);
     mesh->m_states = RTU_STATES::RTU_STATES_LOADED;
 }
 
-void RTUVKGraphicsContext::UploadTexture(IRTUGraphicsDevice* _device, IRTUTexture2D* _texture, RTUTexture2DLoader* loader)
+void RTUVKGraphicsContext::UploadTexture(IRTUTexture2D* _texture, RTUTexture2DLoader* loader)
 {
 }
 
-void RTUVKGraphicsContext::ClearScreen(IRTUGraphicsDevice* _device, const float* color)
+void RTUVKGraphicsContext::ClearScreen(const float* color)
 {
 }
 
-void RTUVKGraphicsContext::ClearRTV(IRTUGraphicsDevice* _device, IRTURenderTexture2D* rtv, const float* color)
+void RTUVKGraphicsContext::ClearRTV(IRTURenderTexture2D* rtv, const float* color)
 {
 }
 
-void RTUVKGraphicsContext::ClearDSV(IRTUGraphicsDevice* _device, IRTURenderTexture2D* dsv)
+void RTUVKGraphicsContext::ClearDSV(IRTURenderTexture2D* dsv)
 {
 }
 

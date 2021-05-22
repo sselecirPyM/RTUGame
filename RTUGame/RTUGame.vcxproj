@@ -100,7 +100,6 @@
     <ClCompile Include="src\IAppCore.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Math\Ray.cpp" />
-    <ClCompile Include="src\RenderPipeline\RenderPipelineResources.cpp" />
     <ClCompile Include="src\Voxel\Chunk16.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -184,7 +183,6 @@
     <ClInclude Include="src\DXUtil.h" />
     <ClInclude Include="src\Math\MathCommon.h" />
     <ClInclude Include="src\Math\Ray.h" />
-    <ClInclude Include="src\RenderPipeline\RenderPipelineResources.h" />
     <ClInclude Include="src\Voxel\Chunk16.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="src\Win32Application.h" />

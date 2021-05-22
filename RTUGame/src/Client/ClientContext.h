@@ -22,8 +22,8 @@ class ClientContext
 {
 public:
 	void Init();
-	bool BakeMeshCache(DirectX::XMINT3 chunkPos);
-	bool BakeMeshFromCache(DirectX::XMINT3 chunkPos, RTUMeshLoader* loader);
+	bool BakeMeshCache(glm::i32vec3 chunkPos);
+	bool BakeMeshFromCache(glm::i32vec3 chunkPos, RTUMeshLoader* loader);
 	std::uint64_t m_currentFrameStamp;
 	std::uint64_t m_tickRate;
 

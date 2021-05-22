@@ -26,4 +26,5 @@ public:
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView = {};
 	D3D12_INDEX_BUFFER_VIEW m_indexBufferView = {};
 	RTU_STATES m_states = RTU_STATES::RTU_STATES_UNLOADED;
+	uint64_t m_lastRefFrame;
 };

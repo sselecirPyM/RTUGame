@@ -33,30 +33,24 @@ void RendererCore::Render1()
 
 	m_graphicsDevice->BeginCommandAllocator();
 	int executeIndex = m_graphicsDevice->GetExecuteIndex();
-	m_renderPipelineContext->ClearRecycleList(executeIndex);
 	auto& _graphicsContext = m_renderPipelineContext->m_graphicsContextUp1;
 	while (!m_meshLoadList0_r->empty() || !m_texture2DLoadList0_r->empty())
 	{
 		_graphicsContext->BeginCommand(m_graphicsDevice.get());
 
-		int startIndex = std::max(0, static_cast<int>(m_meshLoadList0_r->size()) - 64);
+		int startIndex = std::max(0, static_cast<int>(m_meshLoadList0_r->size()) - 512);
 		for (int i = startIndex; i < m_meshLoadList0_r->size(); i++)
 		{
-			_graphicsContext->UploadMesh(m_graphicsDevice.get(), (*m_meshLoadList0_r)[i].m_mesh, (*m_meshLoadList0_r)[i].m_meshLoader.get());
+			_graphicsContext->UploadMesh((*m_meshLoadList0_r)[i].m_mesh, (*m_meshLoadList0_r)[i].m_meshLoader.get());
 		}
 		for (int i = 0; i < m_texture2DLoadList0_r->size(); i++)
 		{
-			_graphicsContext->UploadTexture(m_graphicsDevice.get(), (*m_texture2DLoadList0_r)[i].m_texture, (*m_texture2DLoadList0_r)[i].m_textureLoader.get());
+			_graphicsContext->UploadTexture((*m_texture2DLoadList0_r)[i].m_texture, (*m_texture2DLoadList0_r)[i].m_textureLoader.get());
 		}
 
 		while (startIndex < m_meshLoadList0_r->size())
 		{
-			m_renderPipelineContext->m_meshLoaderRecycleList[executeIndex].emplace_back((m_meshLoadList0_r->end() - 1)._Ptr->m_meshLoader);
 			m_meshLoadList0_r->pop_back();
-		}
-		for (int i = 0; i < m_texture2DLoadList0_r->size(); i++)
-		{
-			m_renderPipelineContext->m_textureLoaderRecycleList[executeIndex].emplace_back((*m_texture2DLoadList0_r)[i].m_textureLoader);
 		}
 		m_texture2DLoadList0_r->clear();
 
@@ -66,7 +60,6 @@ void RendererCore::Render1()
 		{
 			m_graphicsDevice->Next();
 			int executeIndex2 = m_graphicsDevice->GetExecuteIndex();
-			m_renderPipelineContext->ClearRecycleList(executeIndex2);
 			m_graphicsDevice->BeginCommandAllocator();
 		}
 
@@ -74,7 +67,7 @@ void RendererCore::Render1()
 
 	auto& m_graphicsContext = m_renderPipelineContext->m_graphicsContext;
 	m_graphicsContext->BeginCommand(m_graphicsDevice.get());
-	m_graphicsContext->SetHeapDefault(m_graphicsDevice.get());
+	m_graphicsContext->SetHeapDefault();
 	m_currentRenderPipeline->PrepareRenderData(m_renderPipelineContext,m_renderPipelineContext->m_graphicsContext.get());
 
 	m_graphicsContext->ScreenBeginRender();

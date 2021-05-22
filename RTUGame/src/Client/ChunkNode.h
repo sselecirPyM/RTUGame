@@ -27,7 +27,7 @@ const int c_chunkTreeRange = 64 * (1 << c_chunkTreeLevel);
 class IChunkNode
 {
 public:
-	XMINT3 m_position;
+	glm::i32vec3 m_position;
 	virtual ~IChunkNode() {}
 };
 
@@ -57,9 +57,9 @@ class ChunkNodeOP
 {
 public:
 	static void Add(IChunkNode* chunkNode, ClientChunk* chunk, ClientChunk** popIfExist);
-	static void Cull(IChunkNode* chunkNode, FrustumCull& frustumCull, XMINT3& relatePosition, std::vector<DrawContainer0>& result);
+	static void Cull(IChunkNode* chunkNode, FrustumCull& frustumCull, glm::i32vec3& relatePosition, std::vector<DrawContainer0>& result);
 	static void AllChild(IChunkNode* chunkNode, std::vector<ClientChunk*>& result);
-	static void AllChild(IChunkNode* chunkNode, XMINT3& relatePosition, std::vector<DrawContainer0>& result);
-	static bool TryGetChunk(IChunkNode* chunkNode, XMINT3 position, ChunkNode_Bottom** result);
-	static bool TryGetChunk(IChunkNode* chunkNode, XMINT3 position, ClientChunk** result);
+	static void AllChild(IChunkNode* chunkNode, glm::i32vec3& relatePosition, std::vector<DrawContainer0>& result);
+	static bool TryGetChunk(IChunkNode* chunkNode, glm::i32vec3 position, ChunkNode_Bottom** result);
+	static bool TryGetChunk(IChunkNode* chunkNode, glm::i32vec3 position, ClientChunk** result);
 };

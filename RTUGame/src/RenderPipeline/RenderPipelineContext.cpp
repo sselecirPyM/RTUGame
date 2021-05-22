@@ -27,8 +27,6 @@ void RenderPipelineDynamicContext::Clear()
 
 void RenderPipelineContext::Init()
 {
-	m_renderPipelineResources.Init(m_graphicsFactory.get());
-
 	m_graphicsDevice = std::unique_ptr<IRTUGraphicsDevice>(m_graphicsFactory->GetGraphicsDevice());
 	m_graphicsContext = std::unique_ptr<IRTUGraphicsContext>(m_graphicsFactory->GetGraphicsContext());
 	m_graphicsContextUp1 = std::unique_ptr<IRTUGraphicsContext>(m_graphicsFactory->GetGraphicsContext());
@@ -36,13 +34,6 @@ void RenderPipelineContext::Init()
 
 	m_mainBuffer = std::unique_ptr <IRTUCBuffer>(m_graphicsFactory->GetCBuffer());
 
-	m_cubeModel1 = std::unique_ptr <IRTUMesh>(m_graphicsFactory->GetMesh());
-	m_cubeModelWire = std::unique_ptr <IRTUMesh>(m_graphicsFactory->GetMesh());
-	m_quadModel0 = std::unique_ptr <IRTUMesh>(m_graphicsFactory->GetMesh());
-	m_textureLoading = std::unique_ptr <IRTUTexture2D>(m_graphicsFactory->GetTexture2D());
-	m_textureError = std::unique_ptr <IRTUTexture2D>(m_graphicsFactory->GetTexture2D());
-	m_textureBrdfLut = std::unique_ptr <IRTUTexture2D>(m_graphicsFactory->GetTexture2D());
-	m_testTexture = std::unique_ptr <IRTUTexture2D>(m_graphicsFactory->GetTexture2D());
 
 	for (int i = 0; i < _countof(m_screenSizeRTV); i++)
 		m_screenSizeRTV[i] = std::unique_ptr<IRTURenderTexture2D>(m_graphicsFactory->GetRenderTexture2D());
@@ -59,23 +50,23 @@ void RenderPipelineContext::Init()
 
 	std::shared_ptr<RTUMeshLoader> MeshLoader0 = std::make_shared<RTUMeshLoader>();
 	MeshLoader0->Cube1();
-	L_meshLoadList0_w->emplace_back(MeshUploadContainer(m_cubeModel1.get(), MeshLoader0));
+	L_meshLoadList0_w->emplace_back(MeshUploadContainer(Mesh("cube"), MeshLoader0));
 
 	std::shared_ptr<RTUMeshLoader> MeshLoader1 = std::make_shared<RTUMeshLoader>();
 	MeshLoader1->Quad();
-	L_meshLoadList0_w->emplace_back(MeshUploadContainer(m_quadModel0.get(), MeshLoader1));
+	L_meshLoadList0_w->emplace_back(MeshUploadContainer(Mesh("quad"), MeshLoader1));
 
 	std::shared_ptr<RTUMeshLoader> MeshLoader2 = std::make_shared<RTUMeshLoader>();
 	MeshLoader2->CubeWire();
-	L_meshLoadList0_w->emplace_back(MeshUploadContainer(m_cubeModelWire.get(), MeshLoader2));
+	L_meshLoadList0_w->emplace_back(MeshUploadContainer(Mesh("cube_wire"), MeshLoader2));
 
 	std::shared_ptr<RTUTexture2DLoader> texture2DError = std::make_shared<RTUTexture2DLoader>();
 	texture2DError->Pure(glm::vec4(1, 0, 1, 1), 32, 32);
-	L_texture2DLoadList0_w->emplace_back(Texture2DUploadContainer(m_textureError.get(), texture2DError));
+	L_texture2DLoadList0_w->emplace_back(Texture2DUploadContainer(Texture2D("error"), texture2DError));
 
 	std::shared_ptr<RTUTexture2DLoader> texture2DLoading = std::make_shared<RTUTexture2DLoader>();
 	texture2DLoading->Pure(glm::vec4(0, 1, 1, 1), 32, 32);
-	L_texture2DLoadList0_w->emplace_back(Texture2DUploadContainer(m_textureLoading.get(), texture2DLoading));
+	L_texture2DLoadList0_w->emplace_back(Texture2DUploadContainer(Texture2D("loading"), texture2DLoading));
 
 	m_graphicsDevice->InitBuffer(m_mainBuffer.get(), sizeof(m_dynamicContex_r->m_cameraData));
 	SetQuality(1);
@@ -88,29 +79,28 @@ void RenderPipelineContext::InitResources(std::wstring assetsPath)
 {
 	m_assetsPath = assetsPath;
 
-	auto& rpr = m_renderPipelineResources;
 	auto _loader1 = RTUPipelineStateLoader(AssetPath(L"Deferred_GBuffer_VS.cso").c_str(), nullptr, AssetPath(L"Deferred_GBuffer_PS.cso").c_str());
-	m_graphicsDevice->InitPipelineState(&_loader1, rpr.m_deferred_gbuffer.get());
+	m_graphicsDevice->InitPipelineState(&_loader1, PipelineState("deferred_gbuffer"));
 
 	_loader1 = RTUPipelineStateLoader(AssetPath(L"Shadow_VS.cso").c_str(), nullptr, nullptr);
-	m_graphicsDevice->InitPipelineState(&_loader1, rpr.m_shadow.get());
+	m_graphicsDevice->InitPipelineState(&_loader1, PipelineState("shadow"));
 
 	_loader1 = RTUPipelineStateLoader(AssetPath(L"Screen_VS.cso").c_str(), nullptr, AssetPath(L"Deferred_IBL_PS.cso").c_str());
-	m_graphicsDevice->InitPipelineState(&_loader1, rpr.m_deferred_IBL.get());
+	m_graphicsDevice->InitPipelineState(&_loader1, PipelineState("deferred_ibl"));
 
 	_loader1 = RTUPipelineStateLoader(AssetPath(L"Screen_VS.cso").c_str(), nullptr, AssetPath(L"Deferred_DirectLight_PS.cso").c_str());
-	m_graphicsDevice->InitPipelineState(&_loader1, rpr.m_deferred_directLight.get());
+	m_graphicsDevice->InitPipelineState(&_loader1, PipelineState("deferred_directLight"));
 
 	_loader1 = RTUPipelineStateLoader(AssetPath(L"Screen_VS.cso").c_str(), nullptr, AssetPath(L"PostProcess_PS.cso").c_str());
-	m_graphicsDevice->InitPipelineState(&_loader1, rpr.m_postprocess.get());
+	m_graphicsDevice->InitPipelineState(&_loader1, PipelineState("postprocess"));
 
 	std::shared_ptr<RTUTexture2DLoader> texture2DLoader = std::make_shared<RTUTexture2DLoader>();
 	texture2DLoader->LoadTexture(AssetPath(L"Textures/simpletexture.png").c_str(), (RTU_TEXTURE2D_LOAD_FLAGS)(RTU_TEXTURE2D_LOAD_FLAGS_SRGB | RTU_TEXTURE2D_LOAD_FLAGS_MIPMAP));
-	L_texture2DLoadList0_w->emplace_back(Texture2DUploadContainer(m_testTexture.get(), texture2DLoader));
+	L_texture2DLoadList0_w->emplace_back(Texture2DUploadContainer(Texture2D("test"), texture2DLoader));
 
 	std::shared_ptr<RTUTexture2DLoader> texture2DLoader1 = std::make_shared<RTUTexture2DLoader>();
 	texture2DLoader1->LoadTexture(AssetPath(L"Textures/brdflut.png").c_str(), RTU_TEXTURE2D_LOAD_FLAGS_NONE);
-	L_texture2DLoadList0_w->emplace_back(Texture2DUploadContainer(m_textureBrdfLut.get(), texture2DLoader1));
+	L_texture2DLoadList0_w->emplace_back(Texture2DUploadContainer(Texture2D("_BRDFLUT"), texture2DLoader1));
 }
 
 void RenderPipelineContext::SwapDynamicContext()
@@ -127,7 +117,7 @@ void RenderPipelineContext::ProcessSizeChange(int width, int height)
 {
 	m_graphicsContext->Init(m_graphicsDevice.get());
 	m_graphicsDevice->CreateWindowSizeDependentResources(width, height, m_swapChainFormat);
-	m_screenSize = XMUINT2(width, height);
+	m_screenSize = glm::u32vec2(width, height);
 	m_aspectRatio = float(width) / float(height);
 	for (int i = 0; i < _countof(m_screenSizeRTV); i++)
 	{
@@ -153,10 +143,27 @@ void RenderPipelineContext::SetQuality(std::uint32_t quality)
 	}
 }
 
-void RenderPipelineContext::ClearRecycleList(int executeIndex)
+IRTUPipelineState* RenderPipelineContext::PipelineState(std::string name)
 {
-	m_meshLoaderRecycleList[executeIndex].clear();
-	m_textureLoaderRecycleList[executeIndex].clear();
-	m_meshRecycleList[executeIndex].clear();
-	m_meshRecycleList_w = &m_meshRecycleList[executeIndex];
+	auto* _pipelineState = m_graphicsFactory->GetPipelineState();
+	m_pipelineStates[name] = std::unique_ptr<IRTUPipelineState>(_pipelineState);
+	return _pipelineState;
+}
+IRTUTexture2D* RenderPipelineContext::Texture2D(std::string name)
+{
+	auto* tex = m_graphicsFactory->GetTexture2D();
+	m_textures[name] = std::unique_ptr <IRTUTexture2D>(tex);
+	return tex;
+}
+IRTURenderTexture2D* RenderPipelineContext::RenderTexture2D(std::string name)
+{
+	auto* tex = m_graphicsFactory->GetRenderTexture2D();
+	m_renderTextures[name] = std::unique_ptr <IRTURenderTexture2D>(tex);
+	return tex;
+}
+IRTUMesh* RenderPipelineContext::Mesh(std::string name)
+{
+	auto* mesh = m_graphicsFactory->GetMesh();
+	m_meshes[name] = std::unique_ptr <IRTUMesh>(mesh);
+	return mesh;
 }

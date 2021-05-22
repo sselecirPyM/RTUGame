@@ -26,6 +26,17 @@ inline DirectX::XMINT3 MathAlignedDown(DirectX::XMINT3 pos, int alignment)
 	int v1 = alignment - 1;
 	return  DirectX::XMINT3((pos.x) & ~v1, (pos.y) & ~v1, (pos.z) & ~v1);
 }
+
+inline glm::i32vec3 MathAligned(glm::i32vec3 pos, int alignment)
+{
+	int v1 = alignment - 1;
+	return  glm::i32vec3((pos.x + v1) & ~v1, (pos.y + v1) & ~v1, (pos.z + v1) & ~v1);
+}
+inline glm::i32vec3 MathAlignedDown(glm::i32vec3 pos, int alignment)
+{
+	int v1 = alignment - 1;
+	return  glm::i32vec3((pos.x) & ~v1, (pos.y) & ~v1, (pos.z) & ~v1);
+}
 inline DirectX::XMINT3 MathAdd(DirectX::XMINT3 x, DirectX::XMINT3 y)
 {
 	return  DirectX::XMINT3(x.x + y.x, x.y + y.y, x.z + y.z);
@@ -33,6 +44,16 @@ inline DirectX::XMINT3 MathAdd(DirectX::XMINT3 x, DirectX::XMINT3 y)
 inline DirectX::XMINT3 MathSub(DirectX::XMINT3 x, DirectX::XMINT3 y)
 {
 	return  DirectX::XMINT3(x.x - y.x, x.y - y.y, x.z - y.z);
+}
+inline glm::i32vec3 MathAdd(glm::i32vec3 x, glm::i32vec3 y)
+{
+	return x + y;
+	//return  glm::i32vec3(x.x + y.x, x.y + y.y, x.z + y.z);
+}
+inline glm::i32vec3 MathSub(glm::i32vec3 x, glm::i32vec3 y)
+{
+	return x - y;
+	//return  glm::i32vec3(x.x - y.x, x.y - y.y, x.z - y.z);
 }
 inline bool INT3Equal(DirectX::XMINT3 x, DirectX::XMINT3 y)
 {

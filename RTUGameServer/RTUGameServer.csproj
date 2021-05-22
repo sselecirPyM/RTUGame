@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy $(SolutionDir)\$(PlatformName)\$(Configuration)\LZ4.dll $(OutDir)\$(PlatformName)\ /i/y" />
+    <Exec Command="xcopy &quot;$(SolutionDir)\$(PlatformName)\$(Configuration)\LZ4.dll&quot; &quot;$(OutDir)\$(PlatformName)\&quot; /i/y" />
   </Target>
 
   <ItemGroup>

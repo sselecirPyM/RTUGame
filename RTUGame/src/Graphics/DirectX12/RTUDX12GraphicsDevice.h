@@ -17,6 +17,13 @@
 #include "../RTUPipelineStateLoader.h"
 #include "../../Common/RTUCommon.h"
 #include "../RTUGraphicsInterfaces.h"
+
+struct d3d12RecycleResource
+{
+	ComPtr<ID3D12Resource> m_recycleResource;
+	uint64_t m_whichFrame;
+};
+
 class RTUDX12GraphicsDevice : public IRTUGraphicsDevice
 {
 public:
@@ -33,6 +40,7 @@ public:
 	void InitBuffer(IRTUCBuffer* buffer, uint32_t size);
 	void InitBuffer(IRTUSBuffer* buffer, uint32_t size);
 	void InitRenderTexture2D(IRTURenderTexture2D* texture, int width, int height);
+	void RemoveMesh(IRTUMesh* mesh);
 	void Uninit();
 
 	int GetExecuteIndex() { return m_executeIndex; }
@@ -40,14 +48,13 @@ public:
 
 	ID3D12CommandQueue* GetCommandQueue() const { return m_commandQueue.Get(); }
 	ID3D12CommandAllocator* GetCommandAllocator() const { return m_commandAllocators[m_executeIndex].Get(); }
-	ID3D12Resource* GetRenderTarget() const { return m_renderTargets[m_frameIndex].Get(); }
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize); }
+	ID3D12Resource* GetRenderTarget() const { return m_renderTargets[m_swapChain->GetCurrentBackBufferIndex()].Get(); }
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_swapChain->GetCurrentBackBufferIndex(), m_rtvDescriptorSize); }
 	ID3D12Device* GetD3DDevice() const { return m_d3dDevice.Get(); }
 
 	bool m_isRayTracingSupport = false;
-#pragma region Descriptions
+
 	DXGI_ADAPTER_DESC1 m_desc = {};
-#pragma endregion
 
 	const static UINT c_rtvHeapMaxCount = 2048;
 	const static UINT c_dsvHeapMaxCount = 2048;
@@ -81,8 +88,10 @@ public:
 
 	Microsoft::WRL::ComPtr<ID3D12Fence>				m_fence;
 	std::uint64_t									m_fenceValues[c_maxQueueFrameCount] = {};
+	std::uint64_t									m_currentFenceValue = 0;
 	HANDLE											m_fenceEvent = 0;
-	UINT											m_frameIndex = 0;
+	std::vector<d3d12RecycleResource>				m_recycleList;
+
 	int												m_executeIndex = 0;
 
 	Microsoft::WRL::ComPtr<IDXGISwapChain3>			m_swapChain;
@@ -90,6 +99,5 @@ public:
 
 	D3D12_VIEWPORT									m_screenViewport;
 
-	std::uint64_t									m_currentFenceValue = 0;
 };
 

@@ -31,6 +31,7 @@ public:
 	void InitBuffer(IRTUCBuffer* buffer, uint32_t size);
 	void InitBuffer(IRTUSBuffer* buffer, uint32_t size);
 	void InitRenderTexture2D(IRTURenderTexture2D* texture, int width, int height);
+	void RemoveMesh(IRTUMesh* mesh);
 	void Uninit();
 
 	int GetExecuteIndex() { return m_executeIndex; };

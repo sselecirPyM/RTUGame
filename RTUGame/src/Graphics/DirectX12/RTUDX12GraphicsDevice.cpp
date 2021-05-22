@@ -20,6 +20,7 @@
 #include "RTUDX12CBuffer.h"
 #include "RTUDX12SBuffer.h"
 #include "RTUDX12RenderTexture2D.h"
+#include "RTUDX12Mesh.h"
 #include "DX12Util.h"
 #include "../../DXUtil.h"
 
@@ -153,7 +154,6 @@ void RTUDX12GraphicsDevice::CreateWindowSizeDependentResources(int width, int he
 
 	// 创建交换链后台缓冲区的呈现目标视图。
 	{
-		m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptor(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 		for (UINT n = 0; n < c_maxQueueFrameCount; n++)
 		{
@@ -195,7 +195,6 @@ void RTUDX12GraphicsDevice::Present(bool vsync)
 		ThrowIfFailed(hr);
 		ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), m_currentFenceValue));
 
-		m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 		m_executeIndex = (m_executeIndex < (c_maxQueueFrameCount - 1)) ? (m_executeIndex + 1) : 0;
 
 		// 检查下一帧是否准备好启动。
@@ -204,6 +203,14 @@ void RTUDX12GraphicsDevice::Present(bool vsync)
 			ThrowIfFailed(m_fence->SetEventOnCompletion(m_fenceValues[m_executeIndex], m_fenceEvent));
 			WaitForSingleObjectEx(m_fenceEvent, INFINITE, FALSE);
 		}
+
+		std::vector<d3d12RecycleResource> temp;
+		for (size_t i = 0; i < m_recycleList.size(); i++)
+		{
+			if (m_recycleList[i].m_whichFrame > m_fenceValues[m_executeIndex])
+				temp.push_back(m_recycleList[i]);
+		}
+		m_recycleList = temp;
 
 		// 为下一帧设置围栏值。
 		m_currentFenceValue++;
@@ -226,6 +233,14 @@ void RTUDX12GraphicsDevice::WaitForGpu()
 	ThrowIfFailed(m_fence->SetEventOnCompletion(m_currentFenceValue, m_fenceEvent));
 	WaitForSingleObjectEx(m_fenceEvent, INFINITE, FALSE);
 
+	std::vector<d3d12RecycleResource> temp;
+	for (size_t i = 0; i < m_recycleList.size(); i++)
+	{
+		if (m_recycleList[i].m_whichFrame > m_currentFenceValue)
+			temp.push_back(m_recycleList[i]);
+	}
+	m_recycleList = temp;
+
 	// 对当前帧递增围栏值。
 	m_currentFenceValue++;
 }
@@ -239,6 +254,14 @@ void RTUDX12GraphicsDevice::Next()
 		ThrowIfFailed(m_fence->SetEventOnCompletion(m_fenceValues[m_executeIndex], m_fenceEvent));
 		WaitForSingleObjectEx(m_fenceEvent, INFINITE, FALSE);
 	}
+
+	std::vector<d3d12RecycleResource> temp;
+	for (size_t i = 0; i < m_recycleList.size(); i++)
+	{
+		if (m_recycleList[i].m_whichFrame > m_fenceValues[m_executeIndex])
+			temp.push_back(m_recycleList[i]);
+	}
+	m_recycleList = temp;
 
 	m_currentFenceValue++;
 	m_fenceValues[m_executeIndex] = m_currentFenceValue;
@@ -513,6 +536,13 @@ void RTUDX12GraphicsDevice::InitRenderTexture2D(IRTURenderTexture2D* _texture, i
 		handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_cbvsrvuavHeap->GetCPUDescriptorHandleForHeapStart(), texture->m_uavRef, incrementSize);
 		d3dDevice->CreateUnorderedAccessView(texture->m_texture.Get(), nullptr, &uavDesc, handle);
 	}
+}
+
+void RTUDX12GraphicsDevice::RemoveMesh(IRTUMesh* _mesh)
+{
+	RTUDX12Mesh* mesh = static_cast<RTUDX12Mesh*> (_mesh);
+	m_recycleList.push_back(d3d12RecycleResource{mesh->m_vertex,mesh->m_lastRefFrame});
+	m_recycleList.push_back(d3d12RecycleResource{mesh->m_index,mesh->m_lastRefFrame});
 }
 
 void RTUDX12GraphicsDevice::Uninit()

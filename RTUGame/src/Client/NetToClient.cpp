@@ -30,7 +30,7 @@ void NetToClient::Process(NetContext* netContext, ClientContext* clientContext)
 			{
 				auto* chunkc = new ClientChunk();
 				Chunk16& chunk = chunkc->m_chunk;
-				chunk.m_position = *(DirectX::XMINT3*)&data.m_data[0];
+				chunk.m_position = *(glm::i32vec3*)&data.m_data[0];
 				chunk.m_flags = *(CHUNK_FLAGS*)&data.m_data[12];
 				memcpy(chunk.m_data, &data.m_data[Chunk16::c_headerSize], sizeof(Chunk16::m_data));
 				clientContext->m_preloadChunks.push(chunkc);

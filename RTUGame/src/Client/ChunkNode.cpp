@@ -29,8 +29,8 @@ void ChunkNodeOP::Add(IChunkNode* chunkNode, ClientChunk* chunk, ClientChunk** p
 		ChunkNode_Bottom* ndb = dynamic_cast<ChunkNode_Bottom*>(chunkNode);
 		if (nd1 != nullptr)
 		{
-			XMINT3 aligned = MathAlignedDown(chunk->m_chunk.m_position, Chunk16::c_size * (4 << nd1->m_level));
-			XMINT3 position = chunk->m_chunk.m_position;
+			glm::i32vec3 aligned = MathAlignedDown(chunk->m_chunk.m_position, Chunk16::c_size * (4 << nd1->m_level));
+			glm::i32vec3 position = chunk->m_chunk.m_position;
 			int subChunkSize = (Chunk16::c_size * (2 << nd1->m_level));
 			int x1 = (position.x - aligned.x) / subChunkSize;
 			int y1 = (position.y - aligned.y) / subChunkSize;
@@ -43,14 +43,14 @@ void ChunkNodeOP::Add(IChunkNode* chunkNode, ClientChunk* chunk, ClientChunk** p
 				{
 					ChunkNode_1* nd2 = new ChunkNode_1(nd1->m_level - 1);
 					nd1->m_children[z1][y1][x1] = std::unique_ptr<ChunkNode_1>(nd2);
-					nd2->m_position = MathAdd(XMINT3(x1 * subChunkSize, y1 * subChunkSize, z1 * subChunkSize), aligned);
+					nd2->m_position = MathAdd(glm::i32vec3(x1 * subChunkSize, y1 * subChunkSize, z1 * subChunkSize), aligned);
 					chunkNode = nd2;
 				}
 				else
 				{
 					ChunkNode_Bottom* nd2 = new ChunkNode_Bottom();
 					nd1->m_children[z1][y1][x1] = std::unique_ptr<ChunkNode_Bottom>(nd2);
-					nd2->m_position = MathAdd(XMINT3(x1 * subChunkSize, y1 * subChunkSize, z1 * subChunkSize), aligned);
+					nd2->m_position = MathAdd(glm::i32vec3(x1 * subChunkSize, y1 * subChunkSize, z1 * subChunkSize), aligned);
 					chunkNode = nd2;
 				}
 			}
@@ -61,8 +61,8 @@ void ChunkNodeOP::Add(IChunkNode* chunkNode, ClientChunk* chunk, ClientChunk** p
 		}
 		else if (ndb != nullptr)
 		{
-			XMINT3 aligned = MathAlignedDown(chunk->m_chunk.m_position, Chunk16::c_size * 4);
-			XMINT3 position = chunk->m_chunk.m_position;
+			glm::i32vec3 aligned = MathAlignedDown(chunk->m_chunk.m_position, Chunk16::c_size * 4);
+			glm::i32vec3 position = chunk->m_chunk.m_position;
 			int x1 = (position.x - aligned.x) / Chunk16::c_size;
 			int y1 = (position.y - aligned.y) / Chunk16::c_size;
 			int z1 = (position.z - aligned.z) / Chunk16::c_size;
@@ -87,7 +87,7 @@ void ChunkNodeOP::Add(IChunkNode* chunkNode, ClientChunk* chunk, ClientChunk** p
 	}
 }
 
-void ChunkNodeOP::Cull(IChunkNode* chunkNode, FrustumCull& frustumCull, XMINT3& relatePosition, std::vector<DrawContainer0>& result)
+void ChunkNodeOP::Cull(IChunkNode* chunkNode, FrustumCull& frustumCull, glm::i32vec3& relatePosition, std::vector<DrawContainer0>& result)
 {
 	ChunkNode_1* nd1 = dynamic_cast<ChunkNode_1*>(chunkNode);
 	ChunkNode_Bottom* ndb = dynamic_cast<ChunkNode_Bottom*>(chunkNode);
@@ -95,7 +95,7 @@ void ChunkNodeOP::Cull(IChunkNode* chunkNode, FrustumCull& frustumCull, XMINT3& 
 	{
 		auto _1 = MathSub(nd1->m_position, relatePosition);
 		int level = nd1->m_level;
-		auto pos0 = XMLoadSInt3(&_1) + XMVECTORF32{ (1 << level) * 32.0f,(1 << level) * 32.0f,(1 << level) * 32.0f };
+		auto pos0 = XMLoadSInt3((XMINT3*)&_1) + XMVECTORF32{ (1 << level) * 32.0f,(1 << level) * 32.0f,(1 << level) * 32.0f };
 		float t = (1 << level) * 32;
 		if (!frustumCull.BoxIntersects(pos0, XMFLOAT3(t, t, t)))
 			return;
@@ -111,8 +111,8 @@ void ChunkNodeOP::Cull(IChunkNode* chunkNode, FrustumCull& frustumCull, XMINT3& 
 	else if (ndb != nullptr)
 	{
 		if (!ndb->m_mergedMesh)return;
-		XMINT3 a1 = MathSub(ndb->m_position, relatePosition);
-		auto pos0 = XMLoadSInt3(&a1) + XMVECTORF32{ 32, 32, 32 };
+		glm::i32vec3 a1 = MathSub(ndb->m_position, relatePosition);
+		auto pos0 = XMLoadSInt3((XMINT3*)&a1) + XMVECTORF32{ 32, 32, 32 };
 		if (!frustumCull.BoxIntersects(pos0, XMFLOAT3(32, 32, 32)))
 			return;
 		if (frustumCull.BoxContains(pos0, XMFLOAT3(32, 32, 32)))
@@ -123,7 +123,7 @@ void ChunkNodeOP::Cull(IChunkNode* chunkNode, FrustumCull& frustumCull, XMINT3& 
 		int startIndex = 0;
 		int indexCount = 0;
 		auto mesh = DrawContainer0(ndb->m_mergedMesh.get(), XMFLOAT4X4());
-		XMStoreFloat4x4(&mesh.m_toWorldMatrix, XMMatrixTranspose(XMMatrixTranslationFromVector(XMLoadSInt3(&a1))));
+		XMStoreFloat4x4(&mesh.m_toWorldMatrix, XMMatrixTranspose(XMMatrixTranslationFromVector(XMLoadSInt3((XMINT3*)&a1))));
 		for (int z = 0; z < 4; z++)
 			for (int y = 0; y < 4; y++)
 				for (int x = 0; x < 4; x++)
@@ -131,8 +131,8 @@ void ChunkNodeOP::Cull(IChunkNode* chunkNode, FrustumCull& frustumCull, XMINT3& 
 					auto& child = ndb->m_children[z][y][x];
 					if (child != nullptr && ndb->m_startIndexCount[z][y][x] > 0)
 					{
-						auto _1 = MathAdd(XMINT3(x * 16, y * 16, z * 16), a1);
-						auto pos1 = XMLoadSInt3(&_1) + XMVECTORF32{ 8,8,8 };
+						auto _1 = MathAdd(glm::i32vec3(x * 16, y * 16, z * 16), a1);
+						auto pos1 = XMLoadSInt3((XMINT3*)&_1) + XMVECTORF32{ 8,8,8 };
 						if (frustumCull.BoxIntersects(pos1, XMFLOAT3(8, 8, 8)))
 						{
 							indexCount += ndb->m_startIndexCount[z][y][x];
@@ -179,7 +179,7 @@ void ChunkNodeOP::AllChild(IChunkNode* chunkNode, std::vector<ClientChunk*>& res
 	}
 }
 
-void ChunkNodeOP::AllChild(IChunkNode* chunkNode, XMINT3& relatePosition, std::vector<DrawContainer0>& result)
+void ChunkNodeOP::AllChild(IChunkNode* chunkNode, glm::i32vec3& relatePosition, std::vector<DrawContainer0>& result)
 {
 	ChunkNode_1* nd1 = dynamic_cast<ChunkNode_1*>(chunkNode);
 	ChunkNode_Bottom* ndb = dynamic_cast<ChunkNode_Bottom*>(chunkNode);
@@ -192,11 +192,11 @@ void ChunkNodeOP::AllChild(IChunkNode* chunkNode, XMINT3& relatePosition, std::v
 	}
 	else if (ndb != nullptr)
 	{
-		XMINT3 a1 = MathSub(ndb->m_position, relatePosition);
+		glm::i32vec3 a1 = MathSub(ndb->m_position, relatePosition);
 		if (ndb->m_mergedMesh)
 		{
 			auto mesh = DrawContainer0(ndb->m_mergedMesh.get(), XMFLOAT4X4());
-			XMStoreFloat4x4(&mesh.m_toWorldMatrix, XMMatrixTranspose(XMMatrixTranslationFromVector(XMLoadSInt3(&a1))));
+			XMStoreFloat4x4(&mesh.m_toWorldMatrix, XMMatrixTranspose(XMMatrixTranslationFromVector(XMLoadSInt3((XMINT3*)&a1))));
 			mesh.m_startIndex = 0;
 			mesh.m_indexCount = ndb->m_meshIndexCount;
 			result.emplace_back(mesh);
@@ -208,7 +208,7 @@ void ChunkNodeOP::AllChild(IChunkNode* chunkNode, XMINT3& relatePosition, std::v
 	}
 }
 
-bool ChunkNodeOP::TryGetChunk(IChunkNode* chunkNode, XMINT3 position, ChunkNode_Bottom** result)
+bool ChunkNodeOP::TryGetChunk(IChunkNode* chunkNode, glm::i32vec3 position, ChunkNode_Bottom** result)
 {
 	while (true)
 	{
@@ -216,7 +216,7 @@ bool ChunkNodeOP::TryGetChunk(IChunkNode* chunkNode, XMINT3 position, ChunkNode_
 		ChunkNode_Bottom* ndb = dynamic_cast<ChunkNode_Bottom*>(chunkNode);
 		if (nd1 != nullptr)
 		{
-			XMINT3 aligned = MathAlignedDown(position, Chunk16::c_size * (4 << nd1->m_level));
+			glm::i32vec3 aligned = MathAlignedDown(position, Chunk16::c_size * (4 << nd1->m_level));
 			int subChunkSize = (Chunk16::c_size * (2 << nd1->m_level));
 			int x1 = (position.x - aligned.x) / subChunkSize;
 			int y1 = (position.y - aligned.y) / subChunkSize;
@@ -243,12 +243,12 @@ bool ChunkNodeOP::TryGetChunk(IChunkNode* chunkNode, XMINT3 position, ChunkNode_
 	}
 }
 
-bool ChunkNodeOP::TryGetChunk(IChunkNode* chunkNode, XMINT3 position, ClientChunk** result)
+bool ChunkNodeOP::TryGetChunk(IChunkNode* chunkNode, glm::i32vec3 position, ClientChunk** result)
 {
 	ChunkNode_Bottom* chunk;
 	if (!TryGetChunk(chunkNode, position, &chunk))return false;
 
-	XMINT3 aligned = MathAlignedDown(position, Chunk16::c_size * 4);
+	glm::i32vec3 aligned = MathAlignedDown(position, Chunk16::c_size * 4);
 	int x1 = (position.x - aligned.x) / Chunk16::c_size;
 	int y1 = (position.y - aligned.y) / Chunk16::c_size;
 	int z1 = (position.z - aligned.z) / Chunk16::c_size;

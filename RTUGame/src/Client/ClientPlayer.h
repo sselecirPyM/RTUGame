@@ -21,7 +21,7 @@ struct GraphicsCameraData
 	DirectX::XMFLOAT4X4 pvMatrix;
 	DirectX::XMFLOAT3 camPos_f;
 	float aspectRatio;
-	DirectX::XMINT3 camPos_i;
+	glm::i32vec3 camPos_i;
 	UINT unknow1;
 	DirectX::XMFLOAT4X4 vMatrix;
 	DirectX::XMFLOAT4X4 pMatrix;
@@ -35,7 +35,7 @@ class ClientPlayer
 {
 public:
 	void Init();
-	DirectX::XMINT3 m_position_i = {};
+	glm::i32vec3 m_position_i = {};
 	float m_FOV = 1.047197551196f;//60 degree
 	DirectX::XMFLOAT3 m_position_f = { 0.5f,60,-1 };
 	float m_clipFar = 512.0f;

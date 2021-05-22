@@ -14,6 +14,7 @@
 //You should have received a copy of the GNU General Public License
 //along with RTU Game.If not, see < https://www.gnu.org/licenses/>.
 #pragma once
+#include <glm/glm.hpp>
 enum CHUNK_FLAGS : std::uint32_t
 {
 	CHUNK_FLAGS_NONE = 0,
@@ -27,7 +28,7 @@ enum CHUNK_FLAGS : std::uint32_t
 };
 struct Chunk16
 {
-	DirectX::XMINT3 m_position;
+	glm::i32vec3 m_position;
 	CHUNK_FLAGS m_flags;
 	std::uint64_t m_serverFrameStamp;
 	std::uint64_t m_unknow0;

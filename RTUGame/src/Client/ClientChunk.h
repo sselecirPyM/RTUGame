@@ -25,7 +25,7 @@ public:
 	std::vector<char> m_indexCache;
 	int m_indexCount = 0;
 	Chunk16 m_chunk;
-	bool CastRay(RTU::Ray ray, DirectX::XMINT3 relatePosition, DirectX::XMINT3* hitResult, DirectX::XMINT3* surfaceHit);
-	bool TryGetBlock(DirectX::XMINT3 position, std::uint32_t* result);
+	bool CastRay(RTU::Ray ray, glm::i32vec3 relatePosition, glm::i32vec3* hitResult, glm::i32vec3* surfaceHit);
+	bool TryGetBlock(glm::i32vec3 position, std::uint32_t* result);
 };
 

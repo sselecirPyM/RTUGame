@@ -28,7 +28,7 @@ public:
 	void LoadTexture(std::vector<char>& image, RTU_TEXTURE2D_LOAD_FLAGS flags);
 	void LoadTexture(LPCWSTR path, RTU_TEXTURE2D_LOAD_FLAGS flags);
 	void Pure(glm::vec4 color, uint32_t width, uint32_t height);
-	ComPtr<ID3D12Resource> m_texture;
+	//ComPtr<ID3D12Resource> m_texture;
 	uint32_t m_width;
 	uint32_t m_height;
 	uint32_t m_mipLevels;

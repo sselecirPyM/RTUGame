@@ -69,6 +69,7 @@ inline D3D11_BLEND_DESC _BlendDescAdd()
 void RTUDX11GraphicsContext::Init(IRTUGraphicsDevice* _device)
 {
 	RTUDX11GraphicsDevice* device = static_cast<RTUDX11GraphicsDevice*>(_device);
+	m_device = device;
 #ifdef D3D11_MULTIPLE_THREAD
 	device->m_d3dDevice->CreateDeferredContext3(0, &m_d3dContext);
 #else
@@ -76,7 +77,7 @@ void RTUDX11GraphicsContext::Init(IRTUGraphicsDevice* _device)
 #endif
 }
 
-void RTUDX11GraphicsContext::SetHeapDefault(IRTUGraphicsDevice* device)
+void RTUDX11GraphicsContext::SetHeapDefault()
 {
 }
 
@@ -85,19 +86,18 @@ void RTUDX11GraphicsContext::SetGraphicsRootSignature(IRTURootSignature* _signat
 	m_currentRootSignature = static_cast<RTUDX11RootSignature*>(_signature);
 }
 
-void RTUDX11GraphicsContext::SetRenderTargetScreen(IRTUGraphicsDevice* _device, IRTURenderTexture2D* _dsv)
+void RTUDX11GraphicsContext::SetRenderTargetScreen(IRTURenderTexture2D* _dsv)
 {
-	RTUDX11GraphicsDevice* device = static_cast<RTUDX11GraphicsDevice*>(_device);
 	RTUDX11RenderTexture2D* dsv = static_cast<RTUDX11RenderTexture2D*>(_dsv);
-	ID3D11RenderTargetView* const targets[1] = { device->GetBackBufferRenderTargetView() };
-	D3D11_VIEWPORT viewport = device->m_screenViewport;
+	ID3D11RenderTargetView* const targets[1] = { m_device->GetBackBufferRenderTargetView() };
+	D3D11_VIEWPORT viewport = m_device->m_screenViewport;
 	D3D11_RECT scissorRect = { 0, 0, static_cast<LONG>(viewport.Width), static_cast<LONG>(viewport.Height) };
 	m_d3dContext->RSSetViewports(1, &viewport);
 	m_d3dContext->RSSetScissorRects(1, &scissorRect);
 	m_d3dContext->OMSetRenderTargets(1, targets, dsv ? dsv->m_depthStencilView.Get() : nullptr);
 }
 
-void RTUDX11GraphicsContext::SetRenderTargetDSV(IRTUGraphicsDevice* device, IRTURenderTexture2D* _dsv)
+void RTUDX11GraphicsContext::SetRenderTargetDSV(IRTURenderTexture2D* _dsv)
 {
 	RTUDX11RenderTexture2D* dsv = static_cast<RTUDX11RenderTexture2D*>(_dsv);
 	D3D11_VIEWPORT viewport = CD3D11_VIEWPORT(
@@ -112,7 +112,7 @@ void RTUDX11GraphicsContext::SetRenderTargetDSV(IRTUGraphicsDevice* device, IRTU
 	m_d3dContext->OMSetRenderTargets(0, nullptr, dsv->m_depthStencilView.Get());
 }
 
-void RTUDX11GraphicsContext::SetRenderTargetRTVDSV(IRTUGraphicsDevice* device, IRTURenderTexture2D** _rtv, int rtvCount, IRTURenderTexture2D* _dsv)
+void RTUDX11GraphicsContext::SetRenderTargetRTVDSV(IRTURenderTexture2D** _rtv, int rtvCount, IRTURenderTexture2D* _dsv)
 {
 	RTUDX11RenderTexture2D** rtv = (RTUDX11RenderTexture2D**)(_rtv);
 	RTUDX11RenderTexture2D* dsv = static_cast<RTUDX11RenderTexture2D*>(_dsv);
@@ -134,7 +134,7 @@ void RTUDX11GraphicsContext::SetRenderTargetRTVDSV(IRTUGraphicsDevice* device, I
 	m_d3dContext->OMSetRenderTargets(rtvCount, rtvs1, dsv->m_depthStencilView.Get());
 }
 
-void RTUDX11GraphicsContext::SetRenderTargetRTV(IRTUGraphicsDevice* device, IRTURenderTexture2D** _rtv, int rtvCount)
+void RTUDX11GraphicsContext::SetRenderTargetRTV(IRTURenderTexture2D** _rtv, int rtvCount)
 {
 	RTUDX11RenderTexture2D** rtv = (RTUDX11RenderTexture2D**)(_rtv);
 	D3D11_VIEWPORT viewport = CD3D11_VIEWPORT(
@@ -155,27 +155,26 @@ void RTUDX11GraphicsContext::SetRenderTargetRTV(IRTUGraphicsDevice* device, IRTU
 	m_d3dContext->OMSetRenderTargets(rtvCount, rtvs1, nullptr);
 }
 
-void RTUDX11GraphicsContext::SetPipelineState(IRTUGraphicsDevice* _device, IRTURootSignature* _rootSignature, IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
+void RTUDX11GraphicsContext::SetPipelineState(IRTURootSignature* _rootSignature, IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
 {
-	RTUDX11GraphicsDevice* device = static_cast<RTUDX11GraphicsDevice*>(_device);
 	RTUDX11PipelineState* pipelineState = static_cast<RTUDX11PipelineState*>(_pipelineState);
 
 	if (!pipelineState->m_vertexShader)
 	{
 		if (pipelineState->m_vsData.size())
-			ThrowIfFailed(device->m_d3dDevice->CreateVertexShader(pipelineState->m_vsData.data(), pipelineState->m_vsData.size(), nullptr, &pipelineState->m_vertexShader));
+			ThrowIfFailed(m_device->m_d3dDevice->CreateVertexShader(pipelineState->m_vsData.data(), pipelineState->m_vsData.size(), nullptr, &pipelineState->m_vertexShader));
 		if (pipelineState->m_psData.size())
-			ThrowIfFailed(device->m_d3dDevice->CreatePixelShader(pipelineState->m_psData.data(), pipelineState->m_psData.size(), nullptr, &pipelineState->m_pixelShader));
+			ThrowIfFailed(m_device->m_d3dDevice->CreatePixelShader(pipelineState->m_psData.data(), pipelineState->m_psData.size(), nullptr, &pipelineState->m_pixelShader));
 
 		if (desc->eInputLayout == RTU_INPUT_LAYOUT_POSITION_ONLY)
-			ThrowIfFailed(device->m_d3dDevice->CreateInputLayout(_inputLayoutPosOnly, _countof(_inputLayoutPosOnly), pipelineState->m_vsData.data(), pipelineState->m_vsData.size(), &pipelineState->m_inputLayout));
+			ThrowIfFailed(m_device->m_d3dDevice->CreateInputLayout(_inputLayoutPosOnly, _countof(_inputLayoutPosOnly), pipelineState->m_vsData.data(), pipelineState->m_vsData.size(), &pipelineState->m_inputLayout));
 		else if (desc->eInputLayout == RTU_INPUT_LAYOUT_P_N_UV_T)
-			ThrowIfFailed(device->m_d3dDevice->CreateInputLayout(_inputLayoutPNUVT, _countof(_inputLayoutPNUVT), pipelineState->m_vsData.data(), pipelineState->m_vsData.size(), &pipelineState->m_inputLayout));
+			ThrowIfFailed(m_device->m_d3dDevice->CreateInputLayout(_inputLayoutPNUVT, _countof(_inputLayoutPNUVT), pipelineState->m_vsData.data(), pipelineState->m_vsData.size(), &pipelineState->m_inputLayout));
 	}
 
 	D3D11_RASTERIZER_DESC rasterizerDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT());
 	rasterizerDesc.DepthBias = desc->depthBias;
-	device->m_d3dDevice->CreateRasterizerState(&rasterizerDesc, &pipelineState->m_rasterizerState);
+	m_device->m_d3dDevice->CreateRasterizerState(&rasterizerDesc, &pipelineState->m_rasterizerState);
 
 	D3D11_BLEND_DESC blendDesc = {};
 	if (desc->blendmode == RTU_BLEND_MODE_ALPHA)
@@ -184,7 +183,7 @@ void RTUDX11GraphicsContext::SetPipelineState(IRTUGraphicsDevice* _device, IRTUR
 		blendDesc = _BlendDescAdd();
 	else
 		blendDesc = CD3D11_BLEND_DESC(CD3D11_DEFAULT());
-	device->m_d3dDevice->CreateBlendState(&blendDesc, &pipelineState->m_blendState);
+	m_device->m_d3dDevice->CreateBlendState(&blendDesc, &pipelineState->m_blendState);
 
 	m_d3dContext->IASetInputLayout(pipelineState->m_inputLayout.Get());
 	m_d3dContext->IASetPrimitiveTopology(desc->primitiveType);
@@ -258,28 +257,26 @@ void RTUDX11GraphicsContext::UpdateBuffer(IRTUSBuffer* _buffer, int syncIndex, v
 	m_d3dContext->UpdateSubresource(buffer->m_buffer.Get(), 0, nullptr, data, 0, 0);
 }
 
-void RTUDX11GraphicsContext::UploadMesh(IRTUGraphicsDevice* _device, IRTUMesh* _mesh, RTUMeshLoader* loader)
+void RTUDX11GraphicsContext::UploadMesh(IRTUMesh* _mesh, RTUMeshLoader* loader)
 {
-	RTUDX11GraphicsDevice* device = static_cast<RTUDX11GraphicsDevice*>(_device);
 	RTUDX11Mesh* mesh = static_cast<RTUDX11Mesh*>(_mesh);
 	D3D11_SUBRESOURCE_DATA vertexBufferData = {};
 	vertexBufferData.pSysMem = loader->m_vertexData.data();
 	CD3D11_BUFFER_DESC vertexBufferDesc(loader->m_vertexData.size(), D3D11_BIND_VERTEX_BUFFER);
-	ThrowIfFailed(device->m_d3dDevice->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &mesh->m_vertexBuffer));
+	ThrowIfFailed(m_device->m_d3dDevice->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &mesh->m_vertexBuffer));
 
 
 	D3D11_SUBRESOURCE_DATA indexBufferData = {};
 	indexBufferData.pSysMem = loader->m_indexData.data();
 	CD3D11_BUFFER_DESC indexBufferDesc(loader->m_indexData.size(), D3D11_BIND_INDEX_BUFFER);
-	ThrowIfFailed(device->m_d3dDevice->CreateBuffer(&indexBufferDesc, &indexBufferData, &mesh->m_indexBuffer));
+	ThrowIfFailed(m_device->m_d3dDevice->CreateBuffer(&indexBufferDesc, &indexBufferData, &mesh->m_indexBuffer));
 
 	mesh->m_indexCount = loader->m_indexData.size() / 4;
 	mesh->m_vertexStride = loader->m_vertexStride;
 }
 
-void RTUDX11GraphicsContext::UploadTexture(IRTUGraphicsDevice* _device, IRTUTexture2D* _texture, RTUTexture2DLoader* loader)
+void RTUDX11GraphicsContext::UploadTexture(IRTUTexture2D* _texture, RTUTexture2DLoader* loader)
 {
-	RTUDX11GraphicsDevice* device = static_cast<RTUDX11GraphicsDevice*>(_device);
 	RTUDX11Texture2D* texture = static_cast<RTUDX11Texture2D*>(_texture);
 	D3D11_TEXTURE2D_DESC tex2DDesc = {};
 	tex2DDesc.Width = loader->m_width;
@@ -301,32 +298,29 @@ void RTUDX11GraphicsContext::UploadTexture(IRTUGraphicsDevice* _device, IRTUText
 	subresourceData.SysMemPitch = loader->m_width * bytesPerPixel;
 	subresourceData.SysMemSlicePitch = loader->m_width * loader->m_height * bytesPerPixel;
 
-	ThrowIfFailed(device->m_d3dDevice->CreateTexture2D(&tex2DDesc, &subresourceData, &texture->m_texture2D));
+	ThrowIfFailed(m_device->m_d3dDevice->CreateTexture2D(&tex2DDesc, &subresourceData, &texture->m_texture2D));
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(texture->m_texture2D.Get(), D3D11_SRV_DIMENSION_TEXTURE2D, loader->m_format);
-	ThrowIfFailed(device->m_d3dDevice->CreateShaderResourceView(
+	ThrowIfFailed(m_device->m_d3dDevice->CreateShaderResourceView(
 		texture->m_texture2D.Get(),
 		&shaderResourceViewDesc,
 		&texture->m_shaderResourceView
 	));
 }
 
-void RTUDX11GraphicsContext::ClearScreen(IRTUGraphicsDevice* _device, const float* color)
+void RTUDX11GraphicsContext::ClearScreen(const float* color)
 {
-	RTUDX11GraphicsDevice* device = static_cast<RTUDX11GraphicsDevice*>(_device);
-	m_d3dContext->ClearRenderTargetView(device->GetBackBufferRenderTargetView(), color);
+	m_d3dContext->ClearRenderTargetView(m_device->GetBackBufferRenderTargetView(), color);
 }
 
-void RTUDX11GraphicsContext::ClearRTV(IRTUGraphicsDevice* _device, IRTURenderTexture2D* _rtv, const float* color)
+void RTUDX11GraphicsContext::ClearRTV(IRTURenderTexture2D* _rtv, const float* color)
 {
-	RTUDX11GraphicsDevice* device = static_cast<RTUDX11GraphicsDevice*>(_device);
 	RTUDX11RenderTexture2D* rtv = static_cast<RTUDX11RenderTexture2D*>(_rtv);
 	m_d3dContext->ClearRenderTargetView(rtv->m_renderTargetView.Get(), color);
 }
 
-void RTUDX11GraphicsContext::ClearDSV(IRTUGraphicsDevice* _device, IRTURenderTexture2D* _dsv)
+void RTUDX11GraphicsContext::ClearDSV(IRTURenderTexture2D* _dsv)
 {
-	RTUDX11GraphicsDevice* device = static_cast<RTUDX11GraphicsDevice*>(_device);
 	RTUDX11RenderTexture2D* dsv = static_cast<RTUDX11RenderTexture2D*>(_dsv);
 	m_d3dContext->ClearDepthStencilView(dsv->m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

@@ -25,8 +25,8 @@ private:
 	void Process1_1(ClientContext* clientContext, RenderPipelineContext* renderPipelineContext);
 	struct _BakeMeshTaskData
 	{
-		std::set<XMINT3, XMINT3Comparer> posSet;
-		std::set<XMINT3, XMINT3Comparer> posSet64;
+		std::set<glm::i32vec3, XMINT3Comparer> posSet;
+		std::set<glm::i32vec3, XMINT3Comparer> posSet64;
 		void Clear()
 		{
 			posSet.clear();
@@ -36,14 +36,14 @@ private:
 	_BakeMeshTaskData _m_bakeMeshTaskData;
 	struct _BakeData
 	{
-		std::vector<XMINT3> xList;
+		std::vector<glm::i32vec3> xList;
 		std::vector<std::unique_ptr<IRTUMesh>> recycleList;
 		std::vector<MeshUploadContainer> bakedMeshList;
 		std::vector<ChunkNode_Bottom*> nodeList;
 		ClientContext* _clientContext;
 		IRTUGraphicsFactory* _graphicsFactory;
 		size_t count;
-		void Init2(std::set<XMINT3, XMINT3Comparer> set1, ClientContext* clientContext, IRTUGraphicsFactory* graphicsFactory)
+		void Init2(std::set<glm::i32vec3, XMINT3Comparer> set1, ClientContext* clientContext, IRTUGraphicsFactory* graphicsFactory)
 		{
 			xList.clear();
 			recycleList.clear();

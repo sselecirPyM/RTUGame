@@ -24,7 +24,6 @@ void DeferredRenderPipeline::PrepareRenderData(RenderPipelineContext* context, I
 	auto& dcr = context->m_dynamicContex_r;
 	auto& m_graphicsDevice = context->m_graphicsDevice;
 
-	//Note: we don't want to read a protected memory. So copy that into a big buffer to avoid it.
 	memcpy(bigBuffer, &dcr->m_cameraData, sizeof(dcr->m_cameraData));
 	graphicsContext->UpdateBuffer(context->m_mainBuffer.get(), syncIndex, bigBuffer, sizeof(dcr->m_cameraData));
 
@@ -88,24 +87,23 @@ void DeferredRenderPipeline::Render(RenderPipelineContext* context,IRTUGraphicsC
 
 	int syncIndex = context->m_dynamicContex_r->m_syncIndex;
 	auto& graphicsDevice = context->m_graphicsDevice;
-	auto& shaderResources = context->m_renderPipelineResources;
 	auto& dcr = context->m_dynamicContex_r;
 	auto RS1 = context->m_rootSignaturePasses.get();
 	float clearColor[4] = {};
 
 	//generate gbuffer
 	IRTURenderTexture2D* pRT4[4] = { context->m_screenSizeRTV[0].get() ,context->m_screenSizeRTV[1].get() ,context->m_screenSizeRTV[2].get() ,context->m_screenSizeRTV[3].get() };
-	graphicsContext->SetRenderTargetRTVDSV(graphicsDevice.get(), pRT4, 4, context->m_screenSizeDSV[0].get());
-	graphicsContext->ClearDSV(graphicsDevice.get(), context->m_screenSizeDSV[0].get());
+	graphicsContext->SetRenderTargetRTVDSV(pRT4, 4, context->m_screenSizeDSV[0].get());
+	graphicsContext->ClearDSV(context->m_screenSizeDSV[0].get());
 	for (int i = 0; i < 4; i++)
 	{
-		graphicsContext->ClearRTV(graphicsDevice.get(), context->m_screenSizeRTV[i].get(), clearColor);
+		graphicsContext->ClearRTV(context->m_screenSizeRTV[i].get(), clearColor);
 	}
 	graphicsContext->SetGraphicsRootSignature(RS1);
 	graphicsContext->SetCBVR(context->m_mainBuffer.get(), syncIndex,0,0, 0);
-	graphicsContext->SetSRVT(context->m_testTexture.get(), 3);
+	graphicsContext->SetSRVT(context->m_textures["test"].get(), 3);
 
-	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1,shaderResources.m_deferred_gbuffer.get(), &desc_gbuffer);
+	graphicsContext->SetPipelineState(RS1,context->m_pipelineStates["deferred_gbuffer"].get(), &desc_gbuffer);
 	int ofs1 = 0;
 	for (int i = 0; i < dcr->m_cullResultChunk.size(); i++)
 	{
@@ -126,20 +124,20 @@ void DeferredRenderPipeline::Render(RenderPipelineContext* context,IRTUGraphicsC
 	//passes
 	IRTURenderTexture2D* pOutputRT = context->m_outputRTV.get();
 	//IBL
-	graphicsContext->SetRenderTargetRTV(graphicsDevice.get(), &pOutputRT, 1);
-	graphicsContext->ClearRTV(graphicsDevice.get(), context->m_outputRTV.get(), clearColor);
+	graphicsContext->SetRenderTargetRTV(&pOutputRT, 1);
+	graphicsContext->ClearRTV(context->m_outputRTV.get(), clearColor);
 	graphicsContext->SetSRVT(context->m_screenSizeRTV[0].get(), 3);
 	graphicsContext->SetSRVT(context->m_screenSizeRTV[1].get(), 4);
 	graphicsContext->SetSRVT(context->m_screenSizeDSV[0].get(), 5);
-	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1, shaderResources.m_deferred_IBL.get(), &desc_pass);
-	graphicsContext->SetMesh(context->m_quadModel0.get());
-	graphicsContext->DrawIndexed(context->m_quadModel0->GetIndexCount(), 0, 0);
+	graphicsContext->SetPipelineState(RS1, context->m_pipelineStates["deferred_ibl"].get(), &desc_pass);
+	graphicsContext->SetMesh(context->m_meshes["quad"].get());
+	graphicsContext->DrawIndexed(context->m_meshes["quad"]->GetIndexCount(), 0, 0);
 
 	//lightings
-	graphicsContext->SetRenderTargetDSV(graphicsDevice.get(), context->m_shadowMaps[0].get());
-	graphicsContext->ClearDSV(graphicsDevice.get(), context->m_shadowMaps[0].get());
+	graphicsContext->SetRenderTargetDSV(context->m_shadowMaps[0].get());
+	graphicsContext->ClearDSV(context->m_shadowMaps[0].get());
 	context->m_lightBufferGroup.SetCBVR(graphicsContext, syncIndex, 0, 0);
-	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1, shaderResources.m_shadow.get(), &desc_shadow);
+	graphicsContext->SetPipelineState(RS1, context->m_pipelineStates["shadow"].get(), &desc_shadow);
 	for (int i = 0; i < dcr->m_shadowCullResult.size(); i++)
 	{
 		assert(dcr->m_shadowCullResult[i].m_mesh->GetState() == RTU_STATES::RTU_STATES_LOADED);
@@ -148,23 +146,23 @@ void DeferredRenderPipeline::Render(RenderPipelineContext* context,IRTUGraphicsC
 		graphicsContext->DrawIndexed(dcr->m_shadowCullResult[i].m_indexCount, dcr->m_shadowCullResult[i].m_startIndex, 0);
 		ofs1++;
 	}
-	graphicsContext->SetRenderTargetRTV(graphicsDevice.get(), &pOutputRT, 1);
+	graphicsContext->SetRenderTargetRTV(&pOutputRT, 1);
 	graphicsContext->SetCBVR(context->m_mainBuffer.get(), syncIndex,0,0, 0);
 	context->m_lightBufferGroup.SetCBVR(graphicsContext, syncIndex, 0, 1);
 	graphicsContext->SetSRVT(context->m_screenSizeRTV[0].get(), 3);
 	graphicsContext->SetSRVT(context->m_screenSizeRTV[1].get(), 4);
 	graphicsContext->SetSRVT(context->m_screenSizeDSV[0].get(), 5);
 	graphicsContext->SetSRVT(context->m_shadowMaps[0].get(), 6);
-	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1, shaderResources.m_deferred_directLight.get(),&desc_pass);
-	graphicsContext->SetMesh(context->m_quadModel0.get());
-	graphicsContext->DrawIndexed(context->m_quadModel0->GetIndexCount(), 0, 0);
+	graphicsContext->SetPipelineState(RS1, context->m_pipelineStates["deferred_directLight"].get(),&desc_pass);
+	graphicsContext->SetMesh(context->m_meshes["quad"].get());
+	graphicsContext->DrawIndexed(context->m_meshes["quad"]->GetIndexCount(), 0, 0);
 
 
 	//post process
-	graphicsContext->SetRenderTargetScreen(graphicsDevice.get(), nullptr);
-	graphicsContext->ClearScreen(graphicsDevice.get(), context->m_clearColor);
+	graphicsContext->SetRenderTargetScreen(nullptr);
+	graphicsContext->ClearScreen(context->m_clearColor);
 	graphicsContext->SetSRVT(context->m_outputRTV.get(), 3);
-	graphicsContext->SetPipelineState(graphicsDevice.get(), RS1, shaderResources.m_postprocess.get(), &desc_postprocess);
-	graphicsContext->SetMesh(context->m_quadModel0.get());
-	graphicsContext->DrawIndexed(context->m_quadModel0->GetIndexCount(), 0, 0);
+	graphicsContext->SetPipelineState(RS1, context->m_pipelineStates["postprocess"].get(), &desc_postprocess);
+	graphicsContext->SetMesh(context->m_meshes["quad"].get());
+	graphicsContext->DrawIndexed(context->m_meshes["quad"]->GetIndexCount(), 0, 0);
 }
