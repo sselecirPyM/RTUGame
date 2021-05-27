@@ -15,11 +15,6 @@
 //along with RTU Game.If not, see < https://www.gnu.org/licenses/>.
 #pragma once
 #include "../Common/RTUCommon.h"
-class AppHiFreqMsg
-{
-public:
-	RTU_INT2 ScreenSize;
-};
 enum SEQUENCE_INPUT_FLAG : std::uint32_t
 {
 	SEQUENCE_INPUT_FLAG_KEYBOARD_DOWN = 0,
@@ -55,8 +50,8 @@ struct AppSequenceInput
 class AppMessages
 {
 public:
-	AppHiFreqMsg Hi;
-	AppHiFreqMsg Current;
+	RTU_INT2 ScreenSize;
+	RTU_INT2 ScreenSizePrevious;
 
 	std::uint64_t m_previousTick;
 	std::uint64_t m_currentTick;

@@ -20,5 +20,8 @@ class RTUDX12RootSignature : public IRTURootSignature
 {
 public:
 	ComPtr<ID3D12RootSignature> m_rootSignature;
+	std::map<int, int> cbv;
+	std::map<int, int> srv;
+	std::map<int, int> uav;
 };
 

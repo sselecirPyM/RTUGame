@@ -35,6 +35,7 @@ public:
 	std::unique_ptr<IRTUPhysicsScene> m_physicsScene;
 	std::unique_ptr<IRTUPhysicsController> m_physicsController;
 	std::queue<ClientChunk*> m_preloadChunks;
+	void* ImGuiContext;
 	~ClientContext();
 
 	uint64_t TestTotalTime = 0;

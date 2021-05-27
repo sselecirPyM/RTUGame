@@ -34,6 +34,7 @@ void RTUMeshLoader::Quad()
 	m_vertexStride = 12;
 	m_vertexData.resize(sizeof(positions));
 	m_indexData.resize(sizeof(indices));
+	m_indexFormat = DXGI_FORMAT_R32_UINT;
 	memcpy(m_vertexData.data(), positions, sizeof(positions));
 	memcpy(m_indexData.data(), indices, sizeof(indices));
 }
@@ -71,6 +72,7 @@ void RTUMeshLoader::Cube()
 		1, 7, 3,
 		1, 5, 7,
 	};
+	m_indexFormat = DXGI_FORMAT_R32_UINT;
 	m_vertexStride = 12;
 	m_vertexData.resize(sizeof(positions));
 	m_indexData.resize(sizeof(indices));
@@ -108,6 +110,7 @@ void RTUMeshLoader::CubeWire()
 		2, 6,
 		3, 7,
 	};
+	m_indexFormat = DXGI_FORMAT_R32_UINT;
 	m_vertexStride = sizeof(glm::vec3);
 	m_vertexData.resize(sizeof(positions));
 	m_indexData.resize(sizeof(indices));
@@ -172,6 +175,7 @@ void RTUMeshLoader::Cube1()
 		17, 23, 19,
 		17, 21, 23,
 	};
+	m_indexFormat = DXGI_FORMAT_R32_UINT;
 	m_vertexStride = sizeof(PosNormUVTan);
 	m_vertexData.resize(sizeof(positions));
 	m_indexData.resize(sizeof(indices));

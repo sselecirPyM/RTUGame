@@ -15,6 +15,7 @@
 //along with RTU Game.If not, see < https://www.gnu.org/licenses/>.
 #include "stdafx.h"
 #include "RenderPipelineContext.h"
+#include "imgui.h"
 using namespace DirectX;
 
 void RenderPipelineDynamicContext::Clear()
@@ -72,7 +73,8 @@ void RenderPipelineContext::Init()
 	SetQuality(1);
 
 	m_lightBufferGroup.Init(m_graphicsFactory.get(), 512, 65536);
-	m_renderObjectBufferGroup.Init(m_graphicsFactory.get(), 256, 256 * 512);
+	m_renderObjectBufferGroup.Init(m_graphicsFactory.get(), 512, 512 * 512);
+	m_imguiTest.Init(m_graphicsFactory.get(), 512, 65536);
 }
 
 void RenderPipelineContext::InitResources(std::wstring assetsPath)
@@ -93,6 +95,9 @@ void RenderPipelineContext::InitResources(std::wstring assetsPath)
 
 	_loader1 = RTUPipelineStateLoader(AssetPath(L"Screen_VS.cso").c_str(), nullptr, AssetPath(L"PostProcess_PS.cso").c_str());
 	m_graphicsDevice->InitPipelineState(&_loader1, PipelineState("postprocess"));
+
+	_loader1 = RTUPipelineStateLoader(AssetPath(L"ImGui_VS.cso").c_str(), nullptr, AssetPath(L"ImGui_PS.cso").c_str());
+	m_graphicsDevice->InitPipelineState(&_loader1, PipelineState("imgui"));
 
 	std::shared_ptr<RTUTexture2DLoader> texture2DLoader = std::make_shared<RTUTexture2DLoader>();
 	texture2DLoader->LoadTexture(AssetPath(L"Textures/simpletexture.png").c_str(), (RTU_TEXTURE2D_LOAD_FLAGS)(RTU_TEXTURE2D_LOAD_FLAGS_SRGB | RTU_TEXTURE2D_LOAD_FLAGS_MIPMAP));
@@ -117,6 +122,7 @@ void RenderPipelineContext::ProcessSizeChange(int width, int height)
 {
 	m_graphicsContext->Init(m_graphicsDevice.get());
 	m_graphicsDevice->CreateWindowSizeDependentResources(width, height, m_swapChainFormat);
+	ImGui::GetIO().DisplaySize = ImVec2(width, height);
 	m_screenSize = glm::u32vec2(width, height);
 	m_aspectRatio = float(width) / float(height);
 	for (int i = 0; i < _countof(m_screenSizeRTV); i++)
@@ -145,14 +151,22 @@ void RenderPipelineContext::SetQuality(std::uint32_t quality)
 
 IRTUPipelineState* RenderPipelineContext::PipelineState(std::string name)
 {
-	auto* _pipelineState = m_graphicsFactory->GetPipelineState();
-	m_pipelineStates[name] = std::unique_ptr<IRTUPipelineState>(_pipelineState);
+	auto* _pipelineState = m_pipelineStates[name].get();
+	if (_pipelineState == nullptr)
+	{
+		_pipelineState = m_graphicsFactory->GetPipelineState();
+		m_pipelineStates[name] = std::unique_ptr<IRTUPipelineState>(_pipelineState);
+	}
 	return _pipelineState;
 }
 IRTUTexture2D* RenderPipelineContext::Texture2D(std::string name)
 {
-	auto* tex = m_graphicsFactory->GetTexture2D();
-	m_textures[name] = std::unique_ptr <IRTUTexture2D>(tex);
+	auto* tex = m_textures[name].get();
+	if (tex == nullptr)
+	{
+		tex = m_graphicsFactory->GetTexture2D();
+		m_textures[name] = std::unique_ptr <IRTUTexture2D>(tex);
+	}
 	return tex;
 }
 IRTURenderTexture2D* RenderPipelineContext::RenderTexture2D(std::string name)
@@ -163,7 +177,11 @@ IRTURenderTexture2D* RenderPipelineContext::RenderTexture2D(std::string name)
 }
 IRTUMesh* RenderPipelineContext::Mesh(std::string name)
 {
-	auto* mesh = m_graphicsFactory->GetMesh();
-	m_meshes[name] = std::unique_ptr <IRTUMesh>(mesh);
+	auto* mesh = m_meshes[name].get();
+	if (mesh == nullptr)
+	{
+		mesh = m_graphicsFactory->GetMesh();
+		m_meshes[name] = std::unique_ptr <IRTUMesh>(mesh);
+	}
 	return mesh;
 }

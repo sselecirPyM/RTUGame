@@ -133,18 +133,7 @@ void NetDataWrapLayout::ReceiveService()
 				int actualLength = LZ4_decompress_safe(&m_recevingBuffer[peekIndex + c_metaLength], m_recevingProcessBuffer, messageLength, sizeof(m_recevingProcessBuffer));
 				if (actualLength > 0)
 				{
-					if (actualLength < sizeof(NetBlock17k::m_data))
-					{
-						std::unique_ptr<NetBlock17k> netBlock = std::unique_ptr<NetBlock17k>(new NetBlock17k);
-						netBlock->m_header = messageHeader;
-						netBlock->m_size = actualLength;
-						memcpy(netBlock->m_data, m_recevingProcessBuffer, actualLength);
-						{
-							std::lock_guard<std::mutex> guard(m_netContext->lock_smallSizeReceiedData);
-							m_netContext->L_smallSizeReceiedDatas_w->emplace_back(*netBlock);
-						}
-					}
-					else if (actualLength < sizeof(NetBlock64k::m_data))
+					if (actualLength < sizeof(NetBlock64k::m_data))
 					{
 						std::unique_ptr<NetBlock64k> netBlock = std::unique_ptr<NetBlock64k>(new NetBlock64k);
 						netBlock->m_header = messageHeader;
@@ -207,33 +196,6 @@ void NetDataWrapLayout::SendService()
 		m_netContext->m_smallSizeSendDatas_r->clear();
 	}
 }
-
-//bool NetDataWrapLayout::Send(int header, const char* data, int size)
-//{
-//	//char str1[128] = {};
-//	//int iResult;
-//	//int compressedSize = LZ4_compress_default(data, &m_sendingBuffer[8], size, 65528);
-//	//*(int*)&m_sendingBuffer[0] = header;
-//	//*(int*)&m_sendingBuffer[4] = compressedSize;
-//	//iResult = send(m_socket, m_sendingBuffer, compressedSize + 8, 0);
-//	//if (iResult == SOCKET_ERROR) {
-//	//	sprintf_s(str1, "send failed with error: %d\n", WSAGetLastError());
-//	//	OutputDebugStringA(str1);
-//	//	return false;
-//	//}
-//	//sprintf_s(str1, "Bytes Sent: %ld\n", iResult);
-//	//OutputDebugStringA(str1);
-//	NetBlock17k netBlock;
-//	memcpy(netBlock.m_data, data, size);
-//	netBlock.m_header = header;
-//	netBlock.m_size = size;
-//	{
-//		std::lock_guard<std::mutex> guard(m_netContext->lock_smallSizeSendData);
-//		m_netContext->L_smallSizeSendDatas_w->emplace_back(netBlock);
-//	}
-//	SetEvent(m_netContext->m_sendEvent);
-//	return true;
-//}
 
 NetDataWrapLayout::~NetDataWrapLayout()
 {

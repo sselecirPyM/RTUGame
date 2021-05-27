@@ -16,6 +16,7 @@
 #include "stdafx.h"
 #include "UserInput.h"
 #include "../Math/MathCommon.h"
+#include "imgui.h"
 using namespace DirectX;
 void inline _pressButton(InputDesc1& desc1, uint64_t timeStamp)
 {
@@ -30,6 +31,7 @@ void UserInput::Process(ClientContext* context, AppMessages* messages)
 {
 	ClientPlayer& playerInfo = context->m_clientPlayer;
 	AppMessages& m_messages = *messages;
+	auto& io = ImGui::GetIO();
 
 	{
 		std::lock_guard<std::mutex> guard(m_messages.lock_sequenceInputs);
@@ -43,6 +45,7 @@ void UserInput::Process(ClientContext* context, AppMessages* messages)
 		auto& inputValue = input[i];
 		if (inputValue.Flag == SEQUENCE_INPUT_FLAG_MOUSE_MOVE)
 		{
+			io.MousePos = ImVec2(inputValue.X, inputValue.Y);
 			if (playerInfo.mouseLPressed)
 			{
 				mouseDelta.x += float(inputValue.X) - playerInfo.mousePosition.x;
@@ -77,13 +80,19 @@ void UserInput::Process(ClientContext* context, AppMessages* messages)
 		}
 		else if (inputValue.Flag == SEQUENCE_INPUT_FLAG_MOUSE_LBUTTON_DOWN)
 		{
+			io.MouseDown[0] = true;
+
 			playerInfo.mouseLPressed = true;
 			playerInfo.mousePosition = XMUINT2(inputValue.X, inputValue.Y);
+			io.MousePos = ImVec2(inputValue.X, inputValue.Y);
 		}
 		else if (inputValue.Flag == SEQUENCE_INPUT_FLAG_MOUSE_LBUTTON_UP)
 		{
+			io.MouseDown[0] = false;
+
 			playerInfo.mouseLPressed = false;
 			playerInfo.mousePosition = XMUINT2(inputValue.X, inputValue.Y);
+			io.MousePos = ImVec2(inputValue.X, inputValue.Y);
 		}
 		else if (inputValue.Flag == SEQUENCE_INPUT_FLAG_KEYBOARD_UP)
 		{
@@ -153,7 +162,7 @@ void UserInput::Process(ClientContext* context, AppMessages* messages)
 
 	XMFLOAT3 deltaPos;
 	XMStoreFloat3(&deltaPos, speed * messages->m_deltaTime);
-	context->m_physicsDevice->SceneMoveController(context->m_physicsScene.get(), context->m_physicsController.get(), glm::vec3(deltaPos.x,deltaPos.y,deltaPos.z), messages->m_deltaTime);
+	context->m_physicsDevice->SceneMoveController(context->m_physicsScene.get(), context->m_physicsController.get(), glm::vec3(deltaPos.x, deltaPos.y, deltaPos.z), messages->m_deltaTime);
 	XMFLOAT3 realPos;
 	XMFLOAT4 realRot;
 	context->m_physicsDevice->GetControllerTransform(context->m_physicsController.get(), (glm::vec3*)&realPos, (glm::vec4*)&realRot);

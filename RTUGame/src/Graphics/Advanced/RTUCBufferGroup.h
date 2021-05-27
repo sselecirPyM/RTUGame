@@ -20,10 +20,10 @@ class RTUCBufferGroup
 public:
 	void Init(IRTUGraphicsFactory* graphicsFactory, int sliceSize, int bufferSize);
 	void RequireSliceCount(IRTUGraphicsDevice* device, int count);
-	void UpdateSlice(IRTUGraphicsContext* graphicsContext, int syncIndex, int index, void* data, int size);
-	void* GetSlicePtr(IRTUGraphicsContext* graphicsContext, int syncIndex, int index);
-	void UpdateSliceComplete(IRTUGraphicsContext* graphicsContext, int syncIndex);
-	void SetCBVR(IRTUGraphicsContext* graphicsContext, int syncIndex, int index, int slot);
+	void UpdateSlice(IRTUGraphicsContext* graphicsContext, int index, void* data, int size);
+	void* GetSlicePtr(IRTUGraphicsContext* graphicsContext, int index);
+	void UpdateSliceComplete(IRTUGraphicsContext* graphicsContext);
+	void SetCBVR(IRTUGraphicsContext* graphicsContext, int index, int slot);
 	int m_sliceSize;
 	int m_bufferSize;
 	std::vector<std::unique_ptr<IRTUSBuffer>> m_buffers;

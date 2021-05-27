@@ -16,15 +16,16 @@
 #pragma once
 #include "../Voxel/Chunk16.h"
 #include "NetBlock.h"
+enum struct NetMessageType : int
+{
+	move = 'evom',
+	chunk = 'kuhc',
+};
 class NetContext
 {
 public:
 	void SwapDynamicContext();
-	bool Send(int header, const char* data, int size);
-	std::vector<NetBlock17k>* L_smallSizeReceiedDatas_w = &m_smallSizeReceiedDatas[0];
-	std::vector<NetBlock17k>* m_smallSizeReceiedDatas_r = &m_smallSizeReceiedDatas[1];
-	std::vector<NetBlock17k> m_smallSizeReceiedDatas[2];
-	std::mutex lock_smallSizeReceiedData;
+	bool Send(NetMessageType header, const char* data, int size);
 
 	std::vector<NetBlock64k>* L_bigSizeReceiedDatas_w = &m_bigSizeReceiedDatas[0];
 	std::vector<NetBlock64k>* m_bigSizeReceiedDatas_r = &m_bigSizeReceiedDatas[1];
@@ -39,4 +40,3 @@ public:
 	uint64_t m_lastSendTimeStamp;
 	HANDLE m_sendEvent;
 };
-

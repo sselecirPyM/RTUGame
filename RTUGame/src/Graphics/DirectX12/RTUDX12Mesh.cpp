@@ -18,7 +18,7 @@
 
 int RTUDX12Mesh::GetIndexCount()
 {
-	return m_indexBufferView.SizeInBytes / sizeof(UINT);
+	return m_indexBufferView.SizeInBytes / ((m_indexBufferView.Format == DXGI_FORMAT_R32_UINT) ? sizeof(UINT) : sizeof(unsigned short));
 }
 
 RTU_STATES RTUDX12Mesh::GetState()

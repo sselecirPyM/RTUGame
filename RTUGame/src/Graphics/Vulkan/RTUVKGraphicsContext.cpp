@@ -22,17 +22,17 @@
 void RTUVKGraphicsContext::Init(IRTUGraphicsDevice* _device)
 {
 	RTUVKGraphicsDevice* device = static_cast<RTUVKGraphicsDevice*>(_device);
-    m_refDevice = device->m_device;
-    m_refCommandPool = device->m_commandPool;
-    /* Create the command buffer from the command pool */
-    VkCommandBufferAllocateInfo cmd = {};
-    cmd.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmd.pNext = NULL;
-    cmd.commandPool = device->m_commandPool;
-    cmd.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmd.commandBufferCount = 1;
+	m_refDevice = device->m_device;
+	m_refCommandPool = device->m_commandPool;
+	/* Create the command buffer from the command pool */
+	VkCommandBufferAllocateInfo cmd = {};
+	cmd.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	cmd.pNext = NULL;
+	cmd.commandPool = device->m_commandPool;
+	cmd.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	cmd.commandBufferCount = 1;
 
-    ThrowIfFailed(vkAllocateCommandBuffers(device->m_device, &cmd, &m_commandBuffer));
+	ThrowIfFailed(vkAllocateCommandBuffers(device->m_device, &cmd, &m_commandBuffer));
 }
 
 void RTUVKGraphicsContext::SetHeapDefault()
@@ -59,7 +59,7 @@ void RTUVKGraphicsContext::SetRenderTargetRTV(IRTURenderTexture2D** _rtv, int rt
 {
 }
 
-void RTUVKGraphicsContext::SetPipelineState(IRTURootSignature* _rootSignature, IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
+void RTUVKGraphicsContext::SetPipelineState(IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
 {
 }
 
@@ -67,11 +67,11 @@ void RTUVKGraphicsContext::SetMesh(IRTUMesh* _mesh)
 {
 }
 
-void RTUVKGraphicsContext::SetCBVR(IRTUCBuffer* _buffer, int syncIndex, int offset256, int size256, int slot)
+void RTUVKGraphicsContext::SetCBVR(IRTUCBuffer* _buffer, int offset256, int size256, int slot)
 {
 }
 
-void RTUVKGraphicsContext::SetCBVR(IRTUSBuffer* _buffer, int syncIndex, int offset256, int size256, int slot)
+void RTUVKGraphicsContext::SetCBVR(IRTUSBuffer* _buffer, int offset256, int size256, int slot)
 {
 }
 
@@ -91,18 +91,18 @@ void RTUVKGraphicsContext::DrawIndexedInstanced(int indexCount, int startIndexLo
 {
 }
 
-void RTUVKGraphicsContext::UpdateBuffer(IRTUCBuffer* _buffer, int syncIndex, void* data, int dataSize)
+void RTUVKGraphicsContext::UpdateBuffer(IRTUCBuffer* _buffer, void* data, int dataSize)
 {
 }
 
-void RTUVKGraphicsContext::UpdateBuffer(IRTUSBuffer* _buffer, int syncIndex, void* data, int dataSize)
+void RTUVKGraphicsContext::UpdateBuffer(IRTUSBuffer* _buffer, void* data, int dataSize)
 {
 }
 
 void RTUVKGraphicsContext::UploadMesh(IRTUMesh* _mesh, RTUMeshLoader* loader)
 {
-    RTUVKMesh* mesh = static_cast<RTUVKMesh*>(_mesh);
-    mesh->m_states = RTU_STATES::RTU_STATES_LOADED;
+	RTUVKMesh* mesh = static_cast<RTUVKMesh*>(_mesh);
+	mesh->m_states = RTU_STATES::RTU_STATES_LOADED;
 }
 
 void RTUVKGraphicsContext::UploadTexture(IRTUTexture2D* _texture, RTUTexture2DLoader* loader)
@@ -143,5 +143,5 @@ void RTUVKGraphicsContext::ExecuteCommand(IRTUGraphicsDevice* _device)
 
 RTUVKGraphicsContext::~RTUVKGraphicsContext()
 {
-    vkFreeCommandBuffers(m_refDevice, m_refCommandPool, 1, &m_commandBuffer);
+	vkFreeCommandBuffers(m_refDevice, m_refCommandPool, 1, &m_commandBuffer);
 }

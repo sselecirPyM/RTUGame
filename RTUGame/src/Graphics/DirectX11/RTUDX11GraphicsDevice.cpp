@@ -246,7 +246,6 @@ void RTUDX11GraphicsDevice::SetupSwapChain(HWND hwnd, HINSTANCE hinstance, int w
 void RTUDX11GraphicsDevice::InitRootSignaturePass1(IRTURootSignature* _rootSignature)
 {
 	RTUDX11RootSignature* rootSignature = static_cast<RTUDX11RootSignature*>(_rootSignature);
-	rootSignature->m_mapToSlot = { 0,1,2,0,1,2,3,4,5,6 };
 }
 
 static const D3D11_INPUT_ELEMENT_DESC _inputLayoutPosOnly[] =

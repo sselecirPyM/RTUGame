@@ -18,6 +18,5 @@
 class RTUDX11RootSignature : public IRTURootSignature
 {
 public:
-	std::vector<int> m_mapToSlot;
 };
 

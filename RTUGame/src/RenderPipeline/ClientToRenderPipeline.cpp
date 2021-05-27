@@ -195,6 +195,7 @@ void ClientToRenderPipeline::Process1_1(ClientContext* clientContext, RenderPipe
 				{
 					ChunkNode_Bottom* chunk = _bakeData->nodeList[i];
 					std::shared_ptr <RTUMeshLoader> loader = std::make_shared<RTUMeshLoader>();
+					loader->m_indexFormat = DXGI_FORMAT_R32_UINT;
 					if (_bakeData->_clientContext->BakeMeshFromCache(_bakeData->xList[i], loader.get()))
 					{
 						chunk->m_mergedMesh1 = std::unique_ptr<IRTUMesh>(_bakeData->_graphicsFactory->GetMesh());

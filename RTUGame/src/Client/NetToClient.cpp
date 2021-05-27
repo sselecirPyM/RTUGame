@@ -20,12 +20,12 @@ void NetToClient::Process(NetContext* netContext, ClientContext* clientContext)
 {
 	netContext->SwapDynamicContext();
 
-	for (int i = 0; i < netContext->m_smallSizeReceiedDatas_r->size(); i++)
+	for (int i = 0; i < netContext->m_bigSizeReceiedDatas_r->size(); i++)
 	{
-		auto& data = (*netContext->m_smallSizeReceiedDatas_r)[i];
-		switch (data.m_header)
+		auto& data = (*netContext->m_bigSizeReceiedDatas_r)[i];
+		switch ((NetMessageType)data.m_header)
 		{
-		case 'kuhc':
+		case NetMessageType::chunk:
 			if (data.m_size >= Chunk16::c_minimumSize)
 			{
 				auto* chunkc = new ClientChunk();
@@ -53,8 +53,7 @@ void NetToClient::Process(NetContext* netContext, ClientContext* clientContext)
 		*(float*)&movePkgData[32] = clientContext->m_clientPlayer.m_rotation.z;
 		*(float*)&movePkgData[36] = clientContext->m_clientPlayer.m_rotation.w;
 
-		netContext->Send('evom', movePkgData, 120);
+		netContext->Send(NetMessageType::move, movePkgData, 120);
 	}
-	netContext->m_smallSizeReceiedDatas_r->clear();
 	netContext->m_bigSizeReceiedDatas_r->clear();
 }

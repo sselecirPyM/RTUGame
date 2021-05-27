@@ -119,8 +119,12 @@ bool ClientChunk::CastRay(RTU::Ray ray, glm::i32vec3 relatePosition, glm::i32vec
 		XMVECTORF32{0,0,static_cast<float>(sign2.z)},
 	};
 	XMVECTOR scanBlockPos = pos1;
-	do
+	int max = 1000;
+	int current = 0;
+	while (true)
 	{
+		if (current > max)break;
+		current++;
 		pos1 = scanBlockPos - XMVECTORF32{ 1e-5,1e-5,1e-5 };
 		pos2 = scanBlockPos + XMVECTORF32{ 1 + 1e-5 ,1 + 1e-5 ,1 + 1e-5 };
 		for (int i = 0; i < 3; i++)
@@ -144,7 +148,7 @@ bool ClientChunk::CastRay(RTU::Ray ray, glm::i32vec3 relatePosition, glm::i32vec
 		return false;
 	label_t0:
 		continue;
-	} while (true);
+	}
 
 
 	return false;

@@ -21,25 +21,21 @@
 void NetContext::SwapDynamicContext()
 {
 	{
-		std::lock_guard<std::mutex> guard(lock_smallSizeReceiedData);
-		std::swap(m_smallSizeReceiedDatas_r, L_smallSizeReceiedDatas_w);
-	}
-	{
 		std::lock_guard<std::mutex> guard(lock_bigSizeReceiedData);
 		std::swap(m_bigSizeReceiedDatas_r, L_bigSizeReceiedDatas_w);
 	}
 }
 
-bool NetContext::Send(int header, const char* data, int size)
+bool NetContext::Send(NetMessageType header, const char* data, int size)
 {
-	NetBlock17k netBlock;
-	memcpy(netBlock.m_data, data, size);
-	netBlock.m_header = header;
-	netBlock.m_size = size;
+	std::unique_ptr<NetBlock17k> netBlock= std::unique_ptr<NetBlock17k>(new NetBlock17k());
+	memcpy(netBlock->m_data, data, size);
+	netBlock->m_header = (int)header;
+	netBlock->m_size = size;
 	{
 		std::lock_guard<std::mutex> guard(lock_smallSizeSendData);
 		if (L_smallSizeSendDatas_w->size() < 64)
-			L_smallSizeSendDatas_w->emplace_back(netBlock);
+			L_smallSizeSendDatas_w->emplace_back(*netBlock);
 	}
 	SetEvent(m_sendEvent);
 	return true;

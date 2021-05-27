@@ -38,6 +38,12 @@ static const D3D11_INPUT_ELEMENT_DESC _inputLayoutPNUVT[] =
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "TANGENT", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
+static const D3D11_INPUT_ELEMENT_DESC _inputLayoutIMGUI[] =
+{
+	{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+};
 
 inline D3D11_BLEND_DESC _BlendDescAlpha()
 {
@@ -155,7 +161,7 @@ void RTUDX11GraphicsContext::SetRenderTargetRTV(IRTURenderTexture2D** _rtv, int 
 	m_d3dContext->OMSetRenderTargets(rtvCount, rtvs1, nullptr);
 }
 
-void RTUDX11GraphicsContext::SetPipelineState(IRTURootSignature* _rootSignature, IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
+void RTUDX11GraphicsContext::SetPipelineState(IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
 {
 	RTUDX11PipelineState* pipelineState = static_cast<RTUDX11PipelineState*>(_pipelineState);
 
@@ -166,10 +172,12 @@ void RTUDX11GraphicsContext::SetPipelineState(IRTURootSignature* _rootSignature,
 		if (pipelineState->m_psData.size())
 			ThrowIfFailed(m_device->m_d3dDevice->CreatePixelShader(pipelineState->m_psData.data(), pipelineState->m_psData.size(), nullptr, &pipelineState->m_pixelShader));
 
-		if (desc->eInputLayout == RTU_INPUT_LAYOUT_POSITION_ONLY)
+		if (desc->eInputLayout == RTU_INPUT_LAYOUT::POSITION_ONLY)
 			ThrowIfFailed(m_device->m_d3dDevice->CreateInputLayout(_inputLayoutPosOnly, _countof(_inputLayoutPosOnly), pipelineState->m_vsData.data(), pipelineState->m_vsData.size(), &pipelineState->m_inputLayout));
-		else if (desc->eInputLayout == RTU_INPUT_LAYOUT_P_N_UV_T)
+		else if (desc->eInputLayout == RTU_INPUT_LAYOUT::P_N_UV_T)
 			ThrowIfFailed(m_device->m_d3dDevice->CreateInputLayout(_inputLayoutPNUVT, _countof(_inputLayoutPNUVT), pipelineState->m_vsData.data(), pipelineState->m_vsData.size(), &pipelineState->m_inputLayout));
+		else if (desc->eInputLayout == RTU_INPUT_LAYOUT::IMGUI)
+			ThrowIfFailed(m_device->m_d3dDevice->CreateInputLayout(_inputLayoutIMGUI, _countof(_inputLayoutIMGUI), pipelineState->m_vsData.data(), pipelineState->m_vsData.size(), &pipelineState->m_inputLayout));
 	}
 
 	D3D11_RASTERIZER_DESC rasterizerDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT());
@@ -202,34 +210,34 @@ void RTUDX11GraphicsContext::SetMesh(IRTUMesh* _mesh)
 	m_d3dContext->IASetIndexBuffer(mesh->m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 }
 
-void RTUDX11GraphicsContext::SetCBVR(IRTUCBuffer* _buffer, int syncIndex, int offset256, int size256, int slot)
+void RTUDX11GraphicsContext::SetCBVR(IRTUCBuffer* _buffer, int offset256, int size256, int slot)
 {
 	UINT ofs = 16 * offset256;
 	UINT numConst = 16 * size256;
 	RTUDX11CBuffer* buffer = static_cast<RTUDX11CBuffer*>(_buffer);
-	m_d3dContext->VSSetConstantBuffers1(m_currentRootSignature->m_mapToSlot[slot], 1, buffer->m_buffer.GetAddressOf(), &ofs, &numConst);
-	m_d3dContext->PSSetConstantBuffers1(m_currentRootSignature->m_mapToSlot[slot], 1, buffer->m_buffer.GetAddressOf(), &ofs, &numConst);
+	m_d3dContext->VSSetConstantBuffers1(slot, 1, buffer->m_buffer.GetAddressOf(), &ofs, &numConst);
+	m_d3dContext->PSSetConstantBuffers1(slot, 1, buffer->m_buffer.GetAddressOf(), &ofs, &numConst);
 }
 
-void RTUDX11GraphicsContext::SetCBVR(IRTUSBuffer* _buffer, int syncIndex, int offset256, int size256, int slot)
+void RTUDX11GraphicsContext::SetCBVR(IRTUSBuffer* _buffer, int offset256, int size256, int slot)
 {
 	UINT ofs = 16 * offset256;
 	UINT numConst = 16 * size256;
 	RTUDX11SBuffer* buffer = static_cast<RTUDX11SBuffer*>(_buffer);
-	m_d3dContext->VSSetConstantBuffers1(m_currentRootSignature->m_mapToSlot[slot], 1, buffer->m_buffer.GetAddressOf(), &ofs, &numConst);
-	m_d3dContext->PSSetConstantBuffers1(m_currentRootSignature->m_mapToSlot[slot], 1, buffer->m_buffer.GetAddressOf(), &ofs, &numConst);
+	m_d3dContext->VSSetConstantBuffers1(slot, 1, buffer->m_buffer.GetAddressOf(), &ofs, &numConst);
+	m_d3dContext->PSSetConstantBuffers1(slot, 1, buffer->m_buffer.GetAddressOf(), &ofs, &numConst);
 }
 
 void RTUDX11GraphicsContext::SetSRVT(IRTUTexture2D* _texture, int slot)
 {
 	RTUDX11Texture2D* texture = static_cast<RTUDX11Texture2D*>(_texture);
-	m_d3dContext->PSSetShaderResources(m_currentRootSignature->m_mapToSlot[slot], 1, texture->m_shaderResourceView.GetAddressOf());
+	m_d3dContext->PSSetShaderResources(slot, 1, texture->m_shaderResourceView.GetAddressOf());
 }
 
 void RTUDX11GraphicsContext::SetSRVT(IRTURenderTexture2D* _texture, int slot)
 {
 	RTUDX11RenderTexture2D* texture = static_cast<RTUDX11RenderTexture2D*>(_texture);
-	m_d3dContext->PSSetShaderResources(m_currentRootSignature->m_mapToSlot[slot], 1, texture->m_shaderResourceView.GetAddressOf());
+	m_d3dContext->PSSetShaderResources(slot, 1, texture->m_shaderResourceView.GetAddressOf());
 }
 
 void RTUDX11GraphicsContext::DrawIndexed(int indexCount, int startIndexLocation, int baseVertexLocation)
@@ -242,7 +250,7 @@ void RTUDX11GraphicsContext::DrawIndexedInstanced(int indexCount, int startIndex
 	m_d3dContext->DrawIndexedInstanced(indexCount, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
-void RTUDX11GraphicsContext::UpdateBuffer(IRTUCBuffer* _buffer, int syncIndex, void* data, int dataSize)
+void RTUDX11GraphicsContext::UpdateBuffer(IRTUCBuffer* _buffer, void* data, int dataSize)
 {
 	RTUDX11CBuffer* buffer = static_cast<RTUDX11CBuffer*>(_buffer);
 	D3D11_MAPPED_SUBRESOURCE mappedSubResource = {};
@@ -251,7 +259,7 @@ void RTUDX11GraphicsContext::UpdateBuffer(IRTUCBuffer* _buffer, int syncIndex, v
 	m_d3dContext->Unmap(buffer->m_buffer.Get(), 0);
 }
 
-void RTUDX11GraphicsContext::UpdateBuffer(IRTUSBuffer* _buffer, int syncIndex, void* data, int dataSize)
+void RTUDX11GraphicsContext::UpdateBuffer(IRTUSBuffer* _buffer, void* data, int dataSize)
 {
 	RTUDX11SBuffer* buffer = static_cast<RTUDX11SBuffer*>(_buffer);
 	m_d3dContext->UpdateSubresource(buffer->m_buffer.Get(), 0, nullptr, data, 0, 0);

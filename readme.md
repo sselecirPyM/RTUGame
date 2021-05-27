@@ -14,6 +14,7 @@
 * OpenGL Mathematics (GLM)
 * Intel® tbb library
 * PhysX
+* ImGui
 * Visual Studio 2019
 
 \*Intel and the Intel logo are trademarks of Intel Corporation or its subsidiaries in the U.S. and/or other countries.
@@ -23,12 +24,9 @@
 
 安装vcpkg
 
-通过vcpkg安装tbb,glm,PhysX,DirectXTex库
+通过vcpkg安装tbb,glm,PhysX,DirectXTex,ImGui库
 
 使用Visual Studio 2019 构建
-
-## 代码贡献
-我们不接受任何代码贡献。你可以自行fork代码，但我们会无视所有合并请求。
 
 ## 联系我
 在b站上向@sselecirPyM发私信。

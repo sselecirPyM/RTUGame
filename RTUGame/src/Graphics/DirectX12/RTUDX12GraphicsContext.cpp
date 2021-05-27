@@ -37,6 +37,12 @@ static const D3D12_INPUT_ELEMENT_DESC _inputLayoutPNUVT[] =
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	{ "TANGENT", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 };
+static const D3D12_INPUT_ELEMENT_DESC _inputLayoutImGui[] =
+{
+	{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+};
 inline D3D12_BLEND_DESC _BlendDescAlpha()
 {
 	D3D12_BLEND_DESC blendDescAlpha = {};
@@ -90,8 +96,9 @@ void RTUDX12GraphicsContext::SetHeapDefault()
 
 void RTUDX12GraphicsContext::SetGraphicsRootSignature(IRTURootSignature* _signature)
 {
-	RTUDX12RootSignature* signature = static_cast<RTUDX12RootSignature*> (_signature);
-	m_commandList->SetGraphicsRootSignature(signature->m_rootSignature.Get());
+	RTUDX12RootSignature* rootSignature = static_cast<RTUDX12RootSignature*> (_signature);
+	m_currentSignature = rootSignature;
+	m_commandList->SetGraphicsRootSignature(rootSignature->m_rootSignature.Get());
 }
 
 void RTUDX12GraphicsContext::SetRenderTargetScreen(IRTURenderTexture2D* _dsv)
@@ -184,9 +191,9 @@ void RTUDX12GraphicsContext::SetRenderTargetRTV(IRTURenderTexture2D** _rtv, int 
 	m_commandList->OMSetRenderTargets(rtvCount, rtvs1, false, nullptr);
 }
 
-void RTUDX12GraphicsContext::SetPipelineState(IRTURootSignature* _rootSignature, IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
+void RTUDX12GraphicsContext::SetPipelineState(IRTUPipelineState* _pipelineState, RTUPipelineStateDesc* desc)
 {
-	RTUDX12RootSignature* rootSignature = static_cast<RTUDX12RootSignature*>(_rootSignature);
+	RTUDX12RootSignature* rootSignature = static_cast<RTUDX12RootSignature*>(m_currentSignature);
 	RTUDX12PipelineState* pipelineState = static_cast<RTUDX12PipelineState*>(_pipelineState);
 
 	ComPtr<ID3D12PipelineState> state1 = pipelineState->GetPipelineState(desc);
@@ -194,10 +201,12 @@ void RTUDX12GraphicsContext::SetPipelineState(IRTURootSignature* _rootSignature,
 	{
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC stateDesc = {};
 		stateDesc.pRootSignature = rootSignature->m_rootSignature.Get();
-		if (desc->eInputLayout == RTU_INPUT_LAYOUT_POSITION_ONLY)
+		if (desc->eInputLayout == RTU_INPUT_LAYOUT::POSITION_ONLY)
 			stateDesc.InputLayout = { _inputLayoutPosOnly, _countof(_inputLayoutPosOnly) };
-		else if (desc->eInputLayout == RTU_INPUT_LAYOUT_P_N_UV_T)
+		else if (desc->eInputLayout == RTU_INPUT_LAYOUT::P_N_UV_T)
 			stateDesc.InputLayout = { _inputLayoutPNUVT, _countof(_inputLayoutPNUVT) };
+		else if (desc->eInputLayout == RTU_INPUT_LAYOUT::IMGUI)
+			stateDesc.InputLayout = { _inputLayoutImGui, _countof(_inputLayoutImGui) };
 		stateDesc.VS = CD3DX12_SHADER_BYTECODE(pipelineState->m_vertexShader.data(), pipelineState->m_vertexShader.size());
 		stateDesc.GS = CD3DX12_SHADER_BYTECODE(pipelineState->m_geometryShader.data(), pipelineState->m_geometryShader.size());
 		stateDesc.PS = CD3DX12_SHADER_BYTECODE(pipelineState->m_pixelShader.data(), pipelineState->m_pixelShader.size());
@@ -247,23 +256,23 @@ void RTUDX12GraphicsContext::SetMesh(IRTUMesh* _mesh)
 	mesh->m_lastRefFrame = m_device->m_currentFenceValue;
 }
 
-void RTUDX12GraphicsContext::SetCBVR(IRTUCBuffer* _buffer, int syncIndex, int offset256, int size256, int slot)
+void RTUDX12GraphicsContext::SetCBVR(IRTUCBuffer* _buffer, int offset256, int size256, int slot)
 {
 	RTUDX12CBuffer* buffer = static_cast<RTUDX12CBuffer*>(_buffer);
-	m_commandList->SetGraphicsRootConstantBufferView(slot, buffer->m_buffer->GetGPUVirtualAddress() + syncIndex * buffer->m_size + offset256 * 256);
+	m_commandList->SetGraphicsRootConstantBufferView(static_cast<RTUDX12RootSignature*>(m_currentSignature)->cbv[slot], buffer->m_buffer->GetGPUVirtualAddress() + m_device->m_executeIndex * buffer->m_size + offset256 * 256);
 }
 
-void RTUDX12GraphicsContext::SetCBVR(IRTUSBuffer* _buffer, int syncIndex, int offset256, int size256, int slot)
+void RTUDX12GraphicsContext::SetCBVR(IRTUSBuffer* _buffer, int offset256, int size256, int slot)
 {
 	RTUDX12SBuffer* buffer = static_cast<RTUDX12SBuffer*>(_buffer);
-	m_commandList->SetGraphicsRootConstantBufferView(slot, buffer->m_buffer->GetGPUVirtualAddress() + offset256 * 256);
+	m_commandList->SetGraphicsRootConstantBufferView(static_cast<RTUDX12RootSignature*>(m_currentSignature)->cbv[slot], buffer->m_buffer->GetGPUVirtualAddress() + offset256 * 256);
 }
 
 void RTUDX12GraphicsContext::SetSRVT(IRTUTexture2D* _texture, int slot)
 {
 	RTUDX12GraphicsDevice*& device = m_device;
 	RTUDX12Texture2D* texture = static_cast<RTUDX12Texture2D*>(_texture);
-	m_commandList->SetGraphicsRootDescriptorTable(slot, CD3DX12_GPU_DESCRIPTOR_HANDLE(device->m_cbvsrvuavHeap->GetGPUDescriptorHandleForHeapStart(), texture->m_srvRef, device->m_cbvsrvuavDescriptorSize));
+	m_commandList->SetGraphicsRootDescriptorTable(static_cast<RTUDX12RootSignature*>(m_currentSignature)->srv[slot], CD3DX12_GPU_DESCRIPTOR_HANDLE(device->m_cbvsrvuavHeap->GetGPUDescriptorHandleForHeapStart(), texture->m_srvRef, device->m_cbvsrvuavDescriptorSize));
 }
 
 void RTUDX12GraphicsContext::SetSRVT(IRTURenderTexture2D* _texture, int slot)
@@ -271,7 +280,7 @@ void RTUDX12GraphicsContext::SetSRVT(IRTURenderTexture2D* _texture, int slot)
 	RTUDX12GraphicsDevice*& device = m_device;
 	RTUDX12RenderTexture2D* texture = static_cast<RTUDX12RenderTexture2D*>(_texture);
 	_CommonBarrier(texture->m_previousResourceStates, D3D12_RESOURCE_STATE_GENERIC_READ, texture->m_texture.Get(), m_commandList.Get());
-	m_commandList->SetGraphicsRootDescriptorTable(slot, CD3DX12_GPU_DESCRIPTOR_HANDLE(device->m_cbvsrvuavHeap->GetGPUDescriptorHandleForHeapStart(), texture->m_srvRef, device->m_cbvsrvuavDescriptorSize));
+	m_commandList->SetGraphicsRootDescriptorTable(static_cast<RTUDX12RootSignature*>(m_currentSignature)->srv[slot], CD3DX12_GPU_DESCRIPTOR_HANDLE(device->m_cbvsrvuavHeap->GetGPUDescriptorHandleForHeapStart(), texture->m_srvRef, device->m_cbvsrvuavDescriptorSize));
 }
 
 void RTUDX12GraphicsContext::DrawIndexed(int indexCount, int startIndexLocation, int baseVertexLocation)
@@ -284,26 +293,26 @@ void RTUDX12GraphicsContext::DrawIndexedInstanced(int indexCount, int startIndex
 	m_commandList->DrawIndexedInstanced(indexCount, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
-void RTUDX12GraphicsContext::UpdateBuffer(IRTUCBuffer* _buffer, int syncIndex, void* data, int dataSize)
+void RTUDX12GraphicsContext::UpdateBuffer(IRTUCBuffer* _buffer, void* data, int dataSize)
 {
 	RTUDX12CBuffer* buffer = static_cast<RTUDX12CBuffer*>(_buffer);
-	memcpy(buffer->m_mappedBuffer + buffer->m_size * syncIndex, data, dataSize);
+	memcpy(buffer->m_mappedBuffer + buffer->m_size * m_device->m_executeIndex, data, dataSize);
 }
 
-void RTUDX12GraphicsContext::UpdateBuffer(IRTUSBuffer* _buffer, int syncIndex, void* data, int dataSize)
+void RTUDX12GraphicsContext::UpdateBuffer(IRTUSBuffer* _buffer, void* data, int dataSize)
 {
 	RTUDX12SBuffer* buffer = static_cast<RTUDX12SBuffer*>(_buffer);
 	assert(dataSize <= buffer->m_size);
 	D3D12_RANGE readRange = CD3DX12_RANGE(0, 0);
 	char* mapped = nullptr;
 
-	buffer->m_bufferUpload[syncIndex]->Map(0, &readRange, reinterpret_cast<void**>(&mapped));
+	buffer->m_bufferUpload[m_device->m_executeIndex]->Map(0, &readRange, reinterpret_cast<void**>(&mapped));
 	memcpy(mapped, data, dataSize);
-	buffer->m_bufferUpload[syncIndex]->Unmap(0, nullptr);
+	buffer->m_bufferUpload[m_device->m_executeIndex]->Unmap(0, nullptr);
 
 	auto barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(buffer->m_buffer.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST);
 	m_commandList->ResourceBarrier(1, &barrier1);
-	m_commandList->CopyBufferRegion(buffer->m_buffer.Get(), 0, buffer->m_bufferUpload[syncIndex].Get(), 0, dataSize);
+	m_commandList->CopyBufferRegion(buffer->m_buffer.Get(), 0, buffer->m_bufferUpload[m_device->m_executeIndex].Get(), 0, dataSize);
 	barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(buffer->m_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
 	m_commandList->ResourceBarrier(1, &barrier1);
 }
@@ -367,7 +376,8 @@ void RTUDX12GraphicsContext::UploadMesh(IRTUMesh* _mesh, RTUMeshLoader* loader)
 
 	mesh->m_indexBufferView.BufferLocation = mesh->m_vertex->GetGPUVirtualAddress() + vertexSizeA;
 	mesh->m_indexBufferView.SizeInBytes = loader->m_indexData.size();
-	mesh->m_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	mesh->m_indexBufferView.Format = loader->m_indexFormat;
+	assert(loader->m_indexFormat != DXGI_FORMAT_UNKNOWN);
 
 	mesh->m_lastRefFrame = m_device->m_currentFenceValue;
 	mesh->m_states = RTU_STATES::RTU_STATES_LOADED;
@@ -376,11 +386,10 @@ void RTUDX12GraphicsContext::UploadMesh(IRTUMesh* _mesh, RTUMeshLoader* loader)
 void RTUDX12GraphicsContext::UploadTexture(IRTUTexture2D* _texture, RTUTexture2DLoader* loader)
 {
 	RTUDX12Texture2D* texture = static_cast<RTUDX12Texture2D*>(_texture);
-#ifdef _DEBUG
+
 	texture->dbg_width = loader->m_width;
 	texture->dbg_height = loader->m_height;
 	texture->dbg_mipLevels = loader->m_mipLevels;
-#endif
 	auto d3dDevice = m_device->GetD3DDevice();
 
 	auto uploadHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);

@@ -64,6 +64,7 @@ public:
 	std::unique_ptr <IRTUCBuffer> m_mainBuffer;
 	RTUCBufferGroup m_lightBufferGroup;
 	RTUCBufferGroup m_renderObjectBufferGroup;
+	RTUCBufferGroup m_imguiTest;
 
 	std::map<std::string, std::unique_ptr<IRTUPipelineState>> m_pipelineStates;
 	std::map<std::string, std::unique_ptr <IRTUTexture2D>>m_textures;
@@ -93,13 +94,13 @@ public:
 	char m_bigBuffer[65536];
 
 	std::wstring m_assetsPath;
+	IRTUPipelineState* PipelineState(std::string name);
+	IRTUTexture2D* Texture2D(std::string name);
+	IRTURenderTexture2D* RenderTexture2D(std::string name);
+	IRTUMesh* Mesh(std::string name);
 private:
 	std::wstring AssetPath(LPCWSTR assetName)
 	{
 		return m_assetsPath + assetName;
 	}
-	IRTUPipelineState* PipelineState(std::string name);
-	IRTUTexture2D* Texture2D(std::string name);
-	IRTURenderTexture2D* RenderTexture2D(std::string name);
-	IRTUMesh* Mesh(std::string name);
 };

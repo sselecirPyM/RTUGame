@@ -40,7 +40,7 @@ void RTUCBufferGroup::RequireSliceCount(IRTUGraphicsDevice* device, int count)
 	}
 }
 
-void RTUCBufferGroup::UpdateSlice(IRTUGraphicsContext* graphicsContext, int syncIndex, int index, void* data, int size)
+void RTUCBufferGroup::UpdateSlice(IRTUGraphicsContext* graphicsContext, int index, void* data, int size)
 {
 #ifdef _DEBUG
 	assert((int)index > dbg_prevUpdateIndex);
@@ -50,14 +50,14 @@ void RTUCBufferGroup::UpdateSlice(IRTUGraphicsContext* graphicsContext, int sync
 	int index2 = index / m_slicePerBuffer;
 	if (index2 != m_prevBufferIndex)
 	{
-		graphicsContext->UpdateBuffer(m_buffers[m_prevBufferIndex].get(), syncIndex, m_tempBuffer.data(), m_bufferSize);
+		graphicsContext->UpdateBuffer(m_buffers[m_prevBufferIndex].get(), m_tempBuffer.data(), m_bufferSize);
 		m_prevBufferIndex = index2;
 	}
 
 	memcpy(m_tempBuffer.data() + index1 * m_sliceSize, data, size);
 }
 
-void* RTUCBufferGroup::GetSlicePtr(IRTUGraphicsContext* graphicsContext, int syncIndex, int index)
+void* RTUCBufferGroup::GetSlicePtr(IRTUGraphicsContext* graphicsContext, int index)
 {
 #ifdef _DEBUG
 	assert((int)index > dbg_prevUpdateIndex);
@@ -67,25 +67,25 @@ void* RTUCBufferGroup::GetSlicePtr(IRTUGraphicsContext* graphicsContext, int syn
 	int index2 = index / m_slicePerBuffer;
 	if (index2 != m_prevBufferIndex)
 	{
-		graphicsContext->UpdateBuffer(m_buffers[m_prevBufferIndex].get(), syncIndex, m_tempBuffer.data(), m_bufferSize);
+		graphicsContext->UpdateBuffer(m_buffers[m_prevBufferIndex].get(), m_tempBuffer.data(), m_bufferSize);
 		m_prevBufferIndex = index2;
 	}
 	return m_tempBuffer.data() + index1 * m_sliceSize;
 }
 
-void RTUCBufferGroup::UpdateSliceComplete(IRTUGraphicsContext* graphicsContext, int syncIndex)
+void RTUCBufferGroup::UpdateSliceComplete(IRTUGraphicsContext* graphicsContext)
 {
 	if (m_buffers.size() == 0)return;
-	graphicsContext->UpdateBuffer(m_buffers[m_prevBufferIndex].get(), syncIndex, m_tempBuffer.data(), m_bufferSize);
+	graphicsContext->UpdateBuffer(m_buffers[m_prevBufferIndex].get(),  m_tempBuffer.data(), m_bufferSize);
 	m_prevBufferIndex = 0;
 #ifdef _DEBUG
 	dbg_prevUpdateIndex = -1;
 #endif
 }
 
-void RTUCBufferGroup::SetCBVR(IRTUGraphicsContext* graphicsContext, int syncIndex, int index, int slot)
+void RTUCBufferGroup::SetCBVR(IRTUGraphicsContext* graphicsContext, int index, int slot)
 {
 	int index1 = index % m_slicePerBuffer;
 	int index2 = index / m_slicePerBuffer;
-	graphicsContext->SetCBVR(m_buffers[index2].get(), syncIndex, m_sizeD256 * index1, m_sizeD256, slot);
+	graphicsContext->SetCBVR(m_buffers[index2].get(), m_sizeD256 * index1, m_sizeD256, slot);
 }

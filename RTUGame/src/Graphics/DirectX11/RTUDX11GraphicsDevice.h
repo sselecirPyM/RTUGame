@@ -34,7 +34,6 @@ public:
 	void RemoveMesh(IRTUMesh* mesh);
 	void Uninit();
 
-	int GetExecuteIndex() { return m_executeIndex; };
 	uint64_t GetExecutedCount() { return m_executedCount; }
 
 	int m_executeIndex = 0;

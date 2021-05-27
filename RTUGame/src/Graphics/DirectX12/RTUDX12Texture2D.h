@@ -22,10 +22,8 @@ public:
 	ComPtr<ID3D12Resource> m_texture;
 	UINT m_srvRef;
 	RTU_STATES m_states;
-#ifdef _DEBUG
-	//we don't care about textures' size.
+
 	UINT dbg_width = 0;
 	UINT dbg_height = 0;
 	UINT dbg_mipLevels = 0;
-#endif
 };

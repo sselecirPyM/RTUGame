@@ -332,6 +332,15 @@ void RTUDX12GraphicsDevice::InitRootSignaturePass1(IRTURootSignature* rootSignat
 	staticSamplerDescs[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	staticSamplerDescs[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+	auto* signature1 = static_cast<RTUDX12RootSignature*>(rootSignature);
+	for (int i = 0; i < 3; i++)
+	{
+		signature1->cbv[i] = i;
+	}
+	for (int i = 0; i < 7; i++)
+	{
+		signature1->srv[i] = i + 3;
+	}
 
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 	rootSignatureDesc.Init_1_1(_countof(parameter), parameter, _countof(staticSamplerDescs), staticSamplerDescs, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -339,7 +348,7 @@ void RTUDX12GraphicsDevice::InitRootSignaturePass1(IRTURootSignature* rootSignat
 	Microsoft::WRL::ComPtr<ID3DBlob> signature;
 	Microsoft::WRL::ComPtr<ID3DBlob> error;
 	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featherData.HighestVersion, &signature, &error));
-	ThrowIfFailed(m_d3dDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&static_cast<RTUDX12RootSignature*>(rootSignature)->m_rootSignature)));
+	ThrowIfFailed(m_d3dDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&signature1->m_rootSignature)));
 }
 
 inline D3D12_BLEND_DESC _BlendDescAlpha()
@@ -541,8 +550,8 @@ void RTUDX12GraphicsDevice::InitRenderTexture2D(IRTURenderTexture2D* _texture, i
 void RTUDX12GraphicsDevice::RemoveMesh(IRTUMesh* _mesh)
 {
 	RTUDX12Mesh* mesh = static_cast<RTUDX12Mesh*> (_mesh);
-	m_recycleList.push_back(d3d12RecycleResource{mesh->m_vertex,mesh->m_lastRefFrame});
-	m_recycleList.push_back(d3d12RecycleResource{mesh->m_index,mesh->m_lastRefFrame});
+	m_recycleList.push_back(d3d12RecycleResource{ mesh->m_vertex,mesh->m_lastRefFrame });
+	m_recycleList.push_back(d3d12RecycleResource{ mesh->m_index,mesh->m_lastRefFrame });
 }
 
 void RTUDX12GraphicsDevice::Uninit()

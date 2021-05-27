@@ -5,15 +5,16 @@ enum RTU_BLEND_MODES
 	RTU_BLEND_MODE_ALPHA = 1,
 	RTU_BLEND_MODE_ADD = 2,
 };
-enum RTU_INPUT_LAYOUT
+enum struct RTU_INPUT_LAYOUT
 {
-	RTU_INPUT_LAYOUT_POSITION_ONLY = 0,
-	RTU_INPUT_LAYOUT_P_N_UV_T = 1,
+	POSITION_ONLY = 0,
+	P_N_UV_T = 1,
+	IMGUI = 2,
 };
 struct RTUPipelineStateDesc
 {
 	int renderTargetCount;
-	uint32_t eInputLayout;
+	RTU_INPUT_LAYOUT eInputLayout;
 	int depthBias;
 	DXGI_FORMAT rtvFormat;
 	DXGI_FORMAT dsvFormat;

@@ -20,6 +20,7 @@
 #include "Graphics/DirectX12/RTUDX12GraphicsFactory.h"
 #include "Graphics/DirectX11/RTUDX11GraphicsFactory.h"
 #include "Graphics/Vulkan/RTUVKGraphicsFactory.h"
+#include "imgui.h"
 using namespace DirectX;
 
 AppCore::AppCore(int width, int height, std::wstring name) :
@@ -153,8 +154,8 @@ void AppCore::OnSizeChanged(int width, int height, bool minimized)
 {
 	if (!minimized)
 	{
-		m_messages.Hi.ScreenSize.x = width;
-		m_messages.Hi.ScreenSize.y = height;
+		m_messages.ScreenSize.x = width;
+		m_messages.ScreenSize.y = height;
 	}
 }
 
@@ -191,8 +192,8 @@ void AppCore::RenderLoop()
 	m_rendererCore.m_renderPipelineContext = &m_renderPipelineContext;
 
 
-	m_messages.Hi.ScreenSize.x = m_width;
-	m_messages.Hi.ScreenSize.y = m_height;
+	m_messages.ScreenSize.x = m_width;
+	m_messages.ScreenSize.y = m_height;
 	m_renderPipelineContext.m_screenSize = glm::u32vec2(m_width, m_height);
 	m_renderPipelineContext.m_aspectRatio = float(m_width) / float(m_height);
 
@@ -202,31 +203,45 @@ void AppCore::RenderLoop()
 
 	m_graphicsDevice->SetupSwapChain(m_hwnd, m_hinstance, m_width, m_height, m_renderPipelineContext.m_swapChainFormat);
 
-	//m_rendererCore.ProcessLoadList();
-
 	m_clientContext.Init();
 	m_clientContext.m_clientPlayer.Init();
 	m_renderPipelineContext.InitResources(m_assetsPath);
-	//std::future<void> previousRenderTask;
+
+	m_clientContext.ImGuiContext = ImGui::CreateContext();
+	ImGui::SetCurrentContext((ImGuiContext*)m_clientContext.ImGuiContext);
+	unsigned char* pixels;
+	int width;
+	int height;
+	int bytePerPixel;
+	ImGui::GetIO().Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\SIMHEI.ttf", 13, nullptr, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
+	ImGui::GetIO().Fonts->GetTexDataAsRGBA32(&pixels, &width, &height, &bytePerPixel);
+
+	std::shared_ptr<RTUTexture2DLoader> texture2DLoading = std::make_shared<RTUTexture2DLoader>();
+	texture2DLoading->m_data.resize(width * height * bytePerPixel);
+	memcpy(texture2DLoading->m_data.data(), pixels, width * height * bytePerPixel);
+	texture2DLoading->m_width = width;
+	texture2DLoading->m_height = height;
+	texture2DLoading->m_mipLevels = 1;
+	texture2DLoading->m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+
+	m_renderPipelineContext.L_texture2DLoadList0_w->emplace_back(Texture2DUploadContainer(m_renderPipelineContext.Texture2D("imgui_font"), texture2DLoading));
+
 	while (true)
 	{
 		auto& m_graphicsDevice = m_renderPipelineContext.m_graphicsDevice;
 
 		{
-			auto capture = m_messages.Hi;
-			auto& current = m_messages.Current;
+			auto capture = m_messages.ScreenSize;
+			auto& current = m_messages.ScreenSizePrevious;
 
-			if (current.ScreenSize != capture.ScreenSize)
+			if (current != capture)
 			{
-				current.ScreenSize = capture.ScreenSize;
-				//if (previousRenderTask.valid())
-				//	previousRenderTask.wait();
-				m_renderPipelineContext.ProcessSizeChange(capture.ScreenSize.x, capture.ScreenSize.y);
+				current = capture;
+				m_renderPipelineContext.ProcessSizeChange(capture.x, capture.y);
 			}
 			if (m_messages.low_requireDestory)
 			{
-				//if (previousRenderTask.valid())
-				//	previousRenderTask.wait();
 				m_graphicsDevice->WaitForGpu();
 				m_graphicsDevice->Uninit();
 				break;
@@ -243,13 +258,7 @@ void AppCore::RenderLoop()
 		UserInput::Process(&m_clientContext, &m_messages);
 		m_clientContext.m_physicsDevice->SceneSimulate(m_clientContext.m_physicsScene.get(), m_messages.m_deltaTime);
 		m_clientToRenderPipeline.Process2(&m_clientContext, &m_renderPipelineContext);
-		//if (previousRenderTask.valid())
-		//	previousRenderTask.wait();
-		//m_rendererCore.ProcessLoadList();
-		//if (m_launchGraphicsOption < 3)
-		//	previousRenderTask = std::async(std::launch::async, &RendererCore::Render, m_rendererCore);
-		//else
-		//	m_rendererCore.Render();
+
 		m_rendererCore.Render1();
 		std::this_thread::yield();
 	}
