@@ -16,13 +16,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using RTUGame.Game;
 using RTUGameServer.MathTypes;
+using SharpDX;
 
 namespace RTUGameServer.GameLogic
 {
     public class ChunkGeneratorTest : IChunkGenerator
     {
-        public Chunk GetChunk(int x, int y, int z, GameContext gameContext)
+        public Chunk GetChunk(int x, int y, int z, GameWorld gameContext)
         {
             Chunk chunk = gameContext.GetChunk(x, y, z);
             if (chunk != null)
@@ -44,9 +46,7 @@ namespace RTUGameServer.GameLogic
                 return null;
 
             chunk = new Chunk();
-            chunk.x = x;
-            chunk.y = y;
-            chunk.z = z;
+            chunk.position = new Int3(x,y,z);
             for (int rz = 0; rz < 16; rz++)
                 for (int ry = 0; ry < 16; ry++)
                     for (int rx = 0; rx < 16; rx++)
@@ -64,23 +64,23 @@ namespace RTUGameServer.GameLogic
                         }
                     }
 
-            gameContext.chunks[new INT3(x, y, z)] = chunk;
+            gameContext.chunks[new Int3(x, y, z)] = chunk;
             return chunk;
         }
 
-        public void FillRegion(int x, int z, GameContext gameContext)
+        public void FillRegion(int x, int z, GameWorld gameContext)
         {
-            INT2 position = new INT2(x, z);
+            Int2 position = new Int2(x, z);
             for (int i = -2; i < 4; i++)
             {
                 GetChunk(x, i * 16, z, gameContext);
             }
             var regionInfo = GetRegionInfo(x, z, gameContext);
             regionInfo.m_generatorFilled = true;
-            gameContext.regionInfo[position] = regionInfo;
+            gameContext.regionInfos[position] = regionInfo;
         }
 
-        public RegionInfo GetRegionInfo(int x, int z, GameContext gameContext)
+        public RegionInfo GetRegionInfo(int x, int z, GameWorld gameContext)
         {
             RegionInfo regionInfo = new RegionInfo();
             regionInfo.m_minHeight = -32;

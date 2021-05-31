@@ -27,12 +27,4 @@ namespace RTUGameServer.GameLogic
         public bool m_generatorFilled;
         public long m_recentUpdateTimeStamp;
     }
-    public struct RegionInfo64
-    {
-        public int m_minHeight;
-        public int m_maxHeight;
-        public int m_type1;
-        public bool m_fullGenerated;
-        public long m_recentUpdateTimeStamp;
-    }
 }

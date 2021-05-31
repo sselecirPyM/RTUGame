@@ -6,11 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTUGame", "RTUGame\RTUGame.vcxproj", "{CCDE7D36-FE5D-44BA-BAAC-FAA8FDB2DA88}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTUGameServer", "RTUGameServer\RTUGameServer.csproj", "{7996983D-7F34-430B-BBA3-E3D263D716B8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DC5410C4-1837-42AB-9C80-4188660CD04C} = {DC5410C4-1837-42AB-9C80-4188660CD04C}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LZ4", "LZ4\LZ4.vcxproj", "{DC5410C4-1837-42AB-9C80-4188660CD04C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTUGameLauncher", "RTUGameLauncher\RTUGameLauncher.csproj", "{BECE0B18-B424-4307-83CA-840148985BCE}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -18,7 +13,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTUGameLauncher", "RTUGameL
 		{7996983D-7F34-430B-BBA3-E3D263D716B8} = {7996983D-7F34-430B-BBA3-E3D263D716B8}
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTUGame1", "RTUGame1\RTUGame1.csproj", "{5D7ADC33-A164-4103-88BB-54149063C255}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RTUGameResources", "RTUGameResources\RTUGameResources.shproj", "{CC4B0AEB-763B-4EF1-9B37-FA3D43D23D27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDX.Mathematics", "SharpDX.Mathematics\SharpDX.Mathematics.csproj", "{C56A41D9-4378-424C-BEF4-0BE6E2598116}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RTUGameShard", "RTUGameShard\RTUGameShard.shproj", "{B9C82A0B-FEF8-46FF-B487-FF67C729025B}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		RTUGameResources\RTUGameResources.projitems*{5d7adc33-a164-4103-88bb-54149063c255}*SharedItemsImports = 5
+		RTUGameShard\RTUGameShard.projitems*{5d7adc33-a164-4103-88bb-54149063c255}*SharedItemsImports = 5
+		RTUGameShard\RTUGameShard.projitems*{7996983d-7f34-430b-bba3-e3d263d716b8}*SharedItemsImports = 5
+		RTUGameShard\RTUGameShard.projitems*{b9c82a0b-fef8-46ff-b487-ff67c729025b}*SharedItemsImports = 13
+		RTUGameResources\RTUGameResources.projitems*{cc4b0aeb-763b-4ef1-9b37-fa3d43d23d27}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -50,16 +60,6 @@ Global
 		{7996983D-7F34-430B-BBA3-E3D263D716B8}.Release|x64.Build.0 = Release|x64
 		{7996983D-7F34-430B-BBA3-E3D263D716B8}.Release|x86.ActiveCfg = Release|Any CPU
 		{7996983D-7F34-430B-BBA3-E3D263D716B8}.Release|x86.Build.0 = Release|Any CPU
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Debug|x64.ActiveCfg = Debug|x64
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Debug|x64.Build.0 = Debug|x64
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Debug|x86.ActiveCfg = Debug|Win32
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Debug|x86.Build.0 = Debug|Win32
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Release|Any CPU.ActiveCfg = Release|Win32
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Release|x64.ActiveCfg = Release|x64
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Release|x64.Build.0 = Release|x64
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Release|x86.ActiveCfg = Release|Win32
-		{DC5410C4-1837-42AB-9C80-4188660CD04C}.Release|x86.Build.0 = Release|Win32
 		{BECE0B18-B424-4307-83CA-840148985BCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BECE0B18-B424-4307-83CA-840148985BCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BECE0B18-B424-4307-83CA-840148985BCE}.Debug|x64.ActiveCfg = Debug|x64
@@ -72,6 +72,30 @@ Global
 		{BECE0B18-B424-4307-83CA-840148985BCE}.Release|x64.Build.0 = Release|x64
 		{BECE0B18-B424-4307-83CA-840148985BCE}.Release|x86.ActiveCfg = Release|Any CPU
 		{BECE0B18-B424-4307-83CA-840148985BCE}.Release|x86.Build.0 = Release|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Debug|x64.Build.0 = Debug|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Debug|x86.Build.0 = Debug|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Release|x64.ActiveCfg = Release|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Release|x64.Build.0 = Release|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Release|x86.ActiveCfg = Release|Any CPU
+		{5D7ADC33-A164-4103-88BB-54149063C255}.Release|x86.Build.0 = Release|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Debug|x64.Build.0 = Debug|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Debug|x86.Build.0 = Debug|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Release|x64.ActiveCfg = Release|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Release|x64.Build.0 = Release|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Release|x86.ActiveCfg = Release|Any CPU
+		{C56A41D9-4378-424C-BEF4-0BE6E2598116}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

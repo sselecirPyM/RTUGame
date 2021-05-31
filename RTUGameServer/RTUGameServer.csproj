@@ -20,10 +20,6 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(SolutionDir)\$(PlatformName)\$(Configuration)\LZ4.dll&quot; &quot;$(OutDir)\$(PlatformName)\&quot; /i/y" />
-  </Target>
-
   <ItemGroup>
     <Content Include="COPING.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -31,7 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LZ4\LZ4.vcxproj" />
+    <PackageReference Include="K4os.Compression.LZ4" Version="1.2.6" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharpDX.Mathematics\SharpDX.Mathematics.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\RTUGameShard\RTUGameShard.projitems" Label="Shared" />
 
 </Project>

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RenderResource>
+  <VertexShaders>
+    <VertexShader>
+      <Name>VS_FullScreen</Name>
+      <Path>Shaders/VS_FullScreen.hlsl</Path>
+    </VertexShader>
+    <VertexShader>
+      <Name>VS_ImGui</Name>
+      <Path>Shaders/VS_ImGui.hlsl</Path>
+    </VertexShader>
+  </VertexShaders>
+  <PixelShaders>
+    <PixelShader>
+      <Name>PS_FullScreen</Name>
+      <Path>Shaders/PS_FullScreen.hlsl</Path>
+    </PixelShader>
+    <PixelShader>
+      <Name>PS_ImGui</Name>
+      <Path>Shaders/PS_ImGui.hlsl</Path>
+    </PixelShader>
+  </PixelShaders>
+  <PipelineStates>
+    <PipelineState>
+      <Name>ImGui</Name>
+      <VertexShader>VS_ImGui</VertexShader>
+      <PixelShader>PS_ImGui</PixelShader>
+    </PipelineState>
+    <PipelineState>
+      <Name>Test</Name>
+      <VertexShader>VS_FullScreen</VertexShader>
+      <PixelShader>PS_FullScreen</PixelShader>
+    </PipelineState>
+  </PipelineStates>
+</RenderResource>

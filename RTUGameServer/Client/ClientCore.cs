@@ -17,7 +17,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using RTUGameServer.GameLogic;
-using RTUGameServer.MathTypes;
+using Int3 = SharpDX.Int3;
+using Int2 = SharpDX.Int2;
+using RTUGame.Mathematics;
 
 namespace RTUGameServer.Client
 {
@@ -25,19 +27,19 @@ namespace RTUGameServer.Client
     {
         public PlayerInfo playerInfo = null;
 
-        public void TrackVisibleChunks(GameContext gameContext)
+        public void TrackVisibleChunks(GameWorld gameContext)
         {
-            INT3 aPos = playerInfo.positionI.AlignedDown(16);
+            Int3 aPos = playerInfo.PositionI.AlignedDown(16);
             for (int x = -128; x < 144; x += 16)
                 for (int z = -128; z < 144; z += 16)
                 {
-                    INT2 testPoint = new INT2(x + aPos.x, z + aPos.z);
+                    Int2 testPoint = new Int2(x + aPos.X, z + aPos.Z);
 
-                    if (gameContext.regionInfo.TryGetValue(testPoint, out var regionInfo))
+                    if (gameContext.regionInfos.TryGetValue(testPoint, out var regionInfo))
                     {
                         for (int y = regionInfo.m_minHeight; y < regionInfo.m_maxHeight; y += 16)
                         {
-                            var chunkPosition = new INT3(aPos.x + x, y, aPos.z + z);
+                            var chunkPosition = new Int3(aPos.X + x, y, aPos.Z + z);
                             //var chunk1 = gameCore.GetExistChunk(chunkPosition.x, chunkPosition.y, chunkPosition.z);
                             //if (playerInfo.visibleChunks.TryGetValue(chunkPosition, out var timeStamp1))
                             //{
@@ -63,11 +65,11 @@ namespace RTUGameServer.Client
 
                 }
 
-            List<INT3> chunkCullResult = new List<INT3>();
+            List<Int3> chunkCullResult = new List<Int3>();
             foreach (var pair in playerInfo.visibleChunks)
             {
-                INT3 a = pair.Key - playerInfo.positionI + new INT3(8, 8, 8);
-                if (Math.Abs(a.x) + Math.Abs(a.z) > 512)
+                Int3 a = pair.Key - playerInfo.PositionI + new Int3(8, 8, 8);
+                if (Math.Abs(a.X) + Math.Abs(a.Z) > 512)
                 {
                     chunkCullResult.Add(pair.Key);
                 }

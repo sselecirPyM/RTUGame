@@ -23,6 +23,7 @@ namespace RTUGameServer.GameLogic
     {
         public double logicFrameInteral;
         public float maxChunkSightRange;
+        public int seed;
 
         public void InitAsDefault()
         {

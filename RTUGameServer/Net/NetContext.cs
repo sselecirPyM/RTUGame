@@ -14,105 +14,119 @@
 //You should have received a copy of the GNU Affero General Public License
 //along with RTU Game Server.If not, see < https://www.gnu.org/licenses/>.
 
-//#define USE_NET_BLOCK_POOL
+using K4os.Compression.LZ4;
+using RTUGame.Net;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using RTUGame.Collections;
 
 namespace RTUGameServer.Net
 {
     public class NetContext
     {
-        public List<NetBlock> l_receivedBlock_w = new List<NetBlock>();
-        public List<NetBlock> m_receivedBlock_r = new List<NetBlock>();
-        public object lock_receivedBlock = new object();
+        public FlipList<NetPack> receivedBlocks = new FlipList<NetPack>();
         public AutoResetEvent receiveEvent = new AutoResetEvent(false);
         public AutoResetEvent sendEvent = new AutoResetEvent(false);
         public CancellationTokenSource m_stopAll = new CancellationTokenSource();
 
-        const int c_blockSize17k = 17400;
-        const int c_blockSize64k = 65528;
-
-        public ConcurrentStack<NetBlock> pool17k = new ConcurrentStack<NetBlock>();
-        public ConcurrentStack<NetBlock> pool64k = new ConcurrentStack<NetBlock>();
-
-        public NetBlock GetNetBlock(int header, int size)
+        public NetPack GetNetBlock(int header, int size)
         {
-            NetBlock block;
-#if USE_NET_BLOCK_POOL
-            if (size == 0)
-            {
-                block = new NetBlock();
-            }
-            else if (size <= c_blockSize17k)
-            {
-                if (!pool17k.TryPop(out block))
-                {
-                    block = new NetBlock();
-                    block.data = new byte[c_blockSize17k];
-                }
-            }
-            else if (size <= c_blockSize64k)
-            {
-                if (!pool64k.TryPop(out block))
-                {
-                    block = new NetBlock();
-                    block.data = new byte[c_blockSize64k];
-                }
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException("the net block size out of range.");
-            }
-#else
-            block = new NetBlock();
+            NetPack block;
+            block = new NetPack();
             block.data = new byte[size];
-#endif
             block.header = header;
             block.length = size;
             return block;
         }
 
-        public void ReturnToPool(NetBlock netBlock)
-        {
-            if (netBlock.data != null)
-                switch (netBlock.data.Length)
-                {
-                    case c_blockSize17k:
-                        if (pool17k.Count < 16)
-                            pool17k.Push(netBlock);
-                        break;
-                    case c_blockSize64k:
-                        if (pool64k.Count < 16)
-                            pool64k.Push(netBlock);
-                        break;
-                    default:
-                        break;
-                }
-        }
-
-        public void SwapDynamicContext()
-        {
-#if USE_NET_BLOCK_POOL
-            for (int i = 0; i < m_receivedBlock_r.Count; i++)
-            {
-                ReturnToPool(m_receivedBlock_r[i]);
-            }
-#endif
-            m_receivedBlock_r.Clear();
-            lock (lock_receivedBlock)
-            {
-                var temp = l_receivedBlock_w;
-                l_receivedBlock_w = m_receivedBlock_r;
-                m_receivedBlock_r = temp;
-            }
-        }
-
         public void Log(object message)
         {
             Console.WriteLine(string.Format("{0} {1}", DateTime.Now, message));
+        }
+
+
+        Socket socket;
+        byte[] m_receiveBuffer = new byte[65536 * 2];
+        byte[] m_receiveProcessBuffer = new byte[65536];
+        byte[] m_sendBuffer = new byte[65536];
+        byte[] m_sendProcessBuffer = new byte[65536];
+        int m_receiveDataLength = 0;
+        public void Init(Socket socket)
+        {
+            this.socket = socket;
+        }
+        const int c_metaLength = 8;
+        public void ReceiveService()
+        {
+            try
+            {
+                while (true)
+                {
+                    int length = socket.Receive(m_receiveBuffer, m_receiveDataLength, 65536, SocketFlags.None);
+                    if (length == 0) break;
+                    m_receiveDataLength += length;
+                    int peekIndex = 0;
+                    while (true)
+                    {
+                        if (m_receiveDataLength < c_metaLength) break;
+                        int blockSize = BitConverter.ToInt32(m_receiveBuffer, peekIndex + 4);
+                        if (m_receiveDataLength < blockSize + c_metaLength) break;
+                        if (blockSize > 0)
+                        {
+                            int decodedSize = LZ4Codec.Decode(new Span<byte>(m_receiveBuffer, peekIndex + c_metaLength, blockSize), new Span<byte>(m_receiveProcessBuffer, 0, 65536));
+                            if (decodedSize > 0)
+                            {
+                                NetPack block = GetNetBlock(BitConverter.ToInt32(m_receiveBuffer, peekIndex), decodedSize);
+                                Array.Copy(m_receiveProcessBuffer, block.data, decodedSize);
+                                receivedBlocks.Add(block);
+                            }
+                        }
+                        else
+                        {
+                            receivedBlocks.Add(GetNetBlock(BitConverter.ToInt32(m_receiveBuffer, peekIndex), 0));
+                        }
+                        peekIndex += blockSize + c_metaLength;
+                        m_receiveDataLength -= blockSize + c_metaLength;
+                        receiveEvent.Set();
+                    }
+                    Array.ConstrainedCopy(m_receiveBuffer, peekIndex, m_receiveBuffer, 0, m_receiveDataLength);
+                }
+            }
+            catch (SocketException)
+            {
+
+            }
+            catch (Exception e)
+            {
+                Log(e);
+            }
+            finally
+            {
+                receiveEvent.Set();
+            }
+        }
+
+        public void SendStringCompressed(int header, string s)
+        {
+            int length1 = Encoding.UTF8.GetBytes(s, m_sendProcessBuffer);
+            SendCompressed(header, m_sendProcessBuffer, 0, length1);
+        }
+
+        public void Send(NetPack netPack)
+        {
+            SendCompressed(netPack.header, netPack.data, 0, netPack.length);
+        }
+
+        public void SendCompressed(int header, byte[] data, int offset, int size)
+        {
+            int length2 = LZ4Codec.Encode(new Span<byte>(data, offset, size), new Span<byte>(m_sendBuffer, 8, 65528));
+            BitConverter.TryWriteBytes(new Span<byte>(m_sendBuffer, 4, 4), length2);
+            BitConverter.TryWriteBytes(new Span<byte>(m_sendBuffer, 0, 4), header);
+            socket.Send(m_sendBuffer, length2 + 8, SocketFlags.None);
         }
     }
 }

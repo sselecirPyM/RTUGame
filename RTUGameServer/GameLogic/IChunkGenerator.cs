@@ -13,6 +13,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with RTU Game Server.If not, see < https://www.gnu.org/licenses/>.
+using RTUGame.Game;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,8 +22,8 @@ namespace RTUGameServer.GameLogic
 {
     public interface IChunkGenerator
     {
-        public Chunk GetChunk(int x, int y, int z, GameContext gameContext);
-        public void FillRegion(int x, int z, GameContext gameContext);
-        public RegionInfo GetRegionInfo(int x, int y, GameContext gameContext);
+        public Chunk GetChunk(int x, int y, int z, GameWorld gameContext);
+        public void FillRegion(int x, int z, GameWorld gameContext);
+        public RegionInfo GetRegionInfo(int x, int y, GameWorld gameContext);
     }
 }

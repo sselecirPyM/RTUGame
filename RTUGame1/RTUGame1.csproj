@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="ResourcesManage\" />
+    <Folder Include="Interoperation\" />
+    <Folder Include="RenderPipeline\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ImGui.NET" Version="1.78.0" />
+    <PackageReference Include="K4os.Compression.LZ4" Version="1.2.6" />
+    <PackageReference Include="Vortice.Direct3D12" Version="1.9.65" />
+    <PackageReference Include="Vortice.Dxc" Version="1.9.65" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharpDX.Mathematics\SharpDX.Mathematics.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\RTUGameResources\RTUGameResources.projitems" Label="Shared" />
+
+  <Import Project="..\RTUGameShard\RTUGameShard.projitems" Label="Shared" />
+
+</Project>

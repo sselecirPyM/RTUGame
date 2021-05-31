@@ -5,21 +5,28 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using RTUGameServer.GameLogic;
 using RTUGameServer.Net;
+using RTUGame.Game;
+using RTUGame.Net;
+using RTUGame.Mathematics;
 
 namespace RTUGameServer.Utility
 {
     public static class GUtility
     {
-        public static void ToNetBlock(Chunk chunk, NetBlock netBlock)
+        public static void Send(this Chunk chunk, NetContext context)
         {
-            Debug.Assert(netBlock.data.Length >= Chunk.c_minimumSize);
-            netBlock.header = 1802856547/*'kuhc'*/;
-            netBlock.length = Chunk.c_minimumSize;
-            BitConverter.TryWriteBytes(new Span<byte>(netBlock.data, 0, 4), chunk.x);
-            BitConverter.TryWriteBytes(new Span<byte>(netBlock.data, 4, 4), chunk.y);
-            BitConverter.TryWriteBytes(new Span<byte>(netBlock.data, 8, 4), chunk.z);
-            Span<byte> span1 = MemoryMarshal.Cast<int, byte>(new Span<int>(chunk.data));
-            span1.TryCopyTo(new Span<byte>(netBlock.data, 64, 16384));
+            NetPack netPack = context.GetNetBlock((int)NetMessageType.Chunk, Chunk.c_minimumSize);
+            chunk.ToNetBlock(netPack);
+            context.Send(netPack);
+        }
+        public static void DelaySend(this Chunk chunk, User user)
+        {
+            if (user.netPacks.Count < 64)
+            {
+                NetPack netPack = user.netContext.GetNetBlock((int)NetMessageType.Chunk, Chunk.c_minimumSize);
+                chunk.ToNetBlock(netPack);
+                user.netPacks.Enqueue(netPack);
+            }
         }
     }
 }

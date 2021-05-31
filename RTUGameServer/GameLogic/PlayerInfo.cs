@@ -17,31 +17,48 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Numerics;
-using RTUGameServer.MathTypes;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Int3 = SharpDX.Int3;
+using Int2 = SharpDX.Int2;
 
 namespace RTUGameServer.GameLogic
 {
-    public struct PlayerVisibleRegionInfo64
-    {
-        public long timeStamp;
-        public bool fullVisible;
-    }
     public class PlayerInfo
     {
-        public Guid playerGuid;
-        public string name;
-        public string email;
-        public byte[] passwordHash;
-        public long lastActivateTime;
-        public long registerTime;
-        public long totalPlayTime;
-        public int indexToWorld;
+        public Guid PlayerGuid { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public byte[] PasswordHash { get; set; }
+        public long RegisterTime { get; set; }
+        public long TotalPlayTime { get; set; }
 
-        public INT3 positionI;
-        public Vector3 positionF;
-        public Quaternion rotation;
-        public Dictionary<INT3, long> visibleChunks = new Dictionary<INT3, long>();
-        public Dictionary<INT2, long> visibleRegions = new Dictionary<INT2, long>();
-        public Dictionary<INT2, PlayerVisibleRegionInfo64> visibleRegions64 = new Dictionary<INT2, PlayerVisibleRegionInfo64>();
+        public Int3 PositionI { get; set; }
+        public Vector3 PositionF { get; set; }
+        public Quaternion Rotation { get; set; }
+
+        public User currentUser;
+        public DateTime lastActivateTime;
+        public DateTime lastUpdateTime;
+
+
+        [JsonExtensionData]
+        Dictionary<string, JsonElement> additionalData { get; set; }
+
+        public Dictionary<Int3, long> visibleChunks = new Dictionary<Int3, long>();
+        public Dictionary<Int2, long> visibleRegions = new Dictionary<Int2, long>();
+
+        public void RemoveUnusedChunks()
+        {
+            List<Int3> chunkCullResult = new List<Int3>();
+            foreach (var pair in visibleChunks)
+            {
+                Int3 a = pair.Key - PositionI + new Int3(8, 8, 8);
+                if (Math.Abs(a.X) + Math.Abs(a.Z) > 512)
+                    chunkCullResult.Add(pair.Key);
+            }
+            for (int j = 0; j < chunkCullResult.Count; j++)
+                visibleChunks.Remove(chunkCullResult[j]);
+        }
     }
 }
