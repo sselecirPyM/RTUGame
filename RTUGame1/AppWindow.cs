@@ -3,6 +3,7 @@ using RTUGame1.Graphics;
 using RTUGame1.Interoperation;
 using RTUGame1.RenderPipeline;
 using RTUGame1.ResourcesManage;
+using RTUGame1.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,6 +17,7 @@ namespace RTUGame1
         CommonRenderPipeline commonRenderPipeline = new CommonRenderPipeline();
         ImGuiRender GUIRender = new ImGuiRender();
 
+        DateTime currentTime;
         public Win32Window Win32Window;
         public AppWindow(Win32Window Win32Window)
         {
@@ -83,6 +85,10 @@ namespace RTUGame1
             commonRenderPipeline.Prepare();
             commonRenderPipeline.Render();
             ImGui.SetCurrentContext(context.imguiContext);
+            var previous = currentTime;
+            currentTime = DateTime.Now;
+            float delta = (float)(currentTime - previous).TotalSeconds;
+            ImGui.GetIO().DeltaTime = delta;
             context.imguiInputHandler.Update();
             GUIRender.Render();
             graphicsContext.ScreenEndRender();

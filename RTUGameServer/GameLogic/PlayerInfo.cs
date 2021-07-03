@@ -33,6 +33,7 @@ namespace RTUGameServer.GameLogic
         public long RegisterTime { get; set; }
         public long TotalPlayTime { get; set; }
 
+        public long EntityID { get; set; }
         public Int3 PositionI { get; set; }
         public Vector3 PositionF { get; set; }
         public Quaternion Rotation { get; set; }
@@ -40,7 +41,6 @@ namespace RTUGameServer.GameLogic
         public User currentUser;
         public DateTime lastActivateTime;
         public DateTime lastUpdateTime;
-
 
         [JsonExtensionData]
         Dictionary<string, JsonElement> additionalData { get; set; }

@@ -8,6 +8,7 @@ using RTUGame1.Graphics;
 using System.Collections.Concurrent;
 using Vortice.Direct3D12;
 using Vortice.DXGI;
+using RTUGame1.UI;
 
 namespace RTUGame1.ResourcesManage
 {
@@ -30,6 +31,7 @@ namespace RTUGame1.ResourcesManage
 
         public IntPtr imguiContext;
         public ImGuiInputHandler imguiInputHandler;
+        public Game.TheGame theGame = new Game.TheGame();
 
         public void LoadDefaultResource()
         {

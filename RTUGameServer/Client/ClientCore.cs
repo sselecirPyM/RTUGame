@@ -27,7 +27,7 @@ namespace RTUGameServer.Client
     {
         public PlayerInfo playerInfo = null;
 
-        public void TrackVisibleChunks(GameWorld gameContext)
+        public void TrackVisibleChunks(World gameContext)
         {
             Int3 aPos = playerInfo.PositionI.AlignedDown(16);
             for (int x = -128; x < 144; x += 16)

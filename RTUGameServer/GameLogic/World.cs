@@ -29,24 +29,21 @@ using RTUGameServer.Utility;
 
 namespace RTUGameServer.GameLogic
 {
-    public class GameWorld
+    public class World
     {
         public IChunkGenerator chunkGenerator = new ChunkGeneratorTest();
-
-        HashSet<Int2> _cover64 = new HashSet<Int2>();
 
         public GameSettings gameSettings;
         public ConcurrentDictionary<Int3, Chunk> chunks = new ConcurrentDictionary<Int3, Chunk>();
         public ConcurrentDictionary<Int2, RegionInfo> regionInfos = new ConcurrentDictionary<Int2, RegionInfo>();
-        public ConcurrentDictionary<Int2, RegionInfo> regionInfo64 = new ConcurrentDictionary<Int2, RegionInfo>();
+        public ConcurrentDictionary<long, Entity> entities = new ConcurrentDictionary<long, Entity>();
         public ConcurrentQueue<PlayerInfo> playerEnterQueue = new ConcurrentQueue<PlayerInfo>();
         public ConcurrentQueue<PlayerInfo> playerLeaveQueue = new ConcurrentQueue<PlayerInfo>();
         public Dictionary<Guid, PlayerInfo> activatedPlayers = new Dictionary<Guid, PlayerInfo>();
-
         public Dictionary<Guid, PlayerInfo> allPlayers = new Dictionary<Guid, PlayerInfo>();
+        public int idAllocated = 0;
 
         public long frame = 0;
-
 
         public void DefaultSettings()
         {
@@ -123,44 +120,29 @@ namespace RTUGameServer.GameLogic
 
         void ExpandMap()
         {
+            HashSet<Int2> _cover = new HashSet<Int2>();
             foreach (var playerInfo in activatedPlayers.Values)
             {
                 Int3 p = playerInfo.PositionI;
-                Int2 p1 = new Int2(p.X, p.Z).AlignedDown(64);
-                for (int x = -192; x < 256; x += 64)
-                    for (int y = -192; y < 256; y += 64)
+                Int2 p1 = new Int2(p.X, p.Z).AlignedDown(16);
+                for (int x = -192; x <= 192; x += 16)
+                    for (int y = -192; y <= 192; y += 16)
                     {
-                        _cover64.Add(new Int2(p1.X + x, p1.Y + y));
+                        _cover.Add(new Int2(p1.X + x, p1.Y + y));
                     }
             }
-            Parallel.ForEach(_cover64, (Int2 p64) =>
+            Parallel.ForEach(_cover, (Int2 p64) =>
             {
                 int filledCount = 0;
-                if (this.regionInfo64.TryGetValue(p64, out var regionInfo64))
+                Int2 position = new Int2(p64.X, p64.Y);
+                if (!this.regionInfos.TryGetValue(position, out var regionInfo) || !regionInfo.m_generatorFilled)
                 {
-                    if (regionInfo64.m_generatorFilled)
-                        return;
+                    chunkGenerator.FillRegion(position.X, position.Y, this);
                 }
                 else
-                {
-                    regionInfo64 = new RegionInfo();
-                    this.regionInfo64[p64] = regionInfo64;
-                }
-                for (int x = 0; x < 64; x += 16)
-                    for (int y = 0; y < 64; y += 16)
-                    {
-                        Int2 position = new Int2(p64.X + x, p64.Y + y);
-                        if (!this.regionInfos.TryGetValue(position, out var regionInfo) || !regionInfo.m_generatorFilled)
-                        {
-                            chunkGenerator.FillRegion(position.X, position.Y, this);
-                        }
-                        else
-                            filledCount++;
-                    }
-                if (filledCount == 16)
-                    regionInfo64.m_generatorFilled = true;
+                    filledCount++;
             });
-            _cover64.Clear();
+            _cover.Clear();
         }
 
         void Tick()
@@ -186,23 +168,14 @@ namespace RTUGameServer.GameLogic
                 var player = playerPair.Value;
                 var user = player.currentUser;
 
-
-                if (player.lastUpdateTime<player.lastActivateTime)
+                if (player.lastUpdateTime < player.lastActivateTime)
                 {
                     player.lastUpdateTime = now;
                     foreach (var chunkPosition in VisibleChunks(player))
                     {
                         var chunk1 = GetChunk(chunkPosition);
-
-                        if (player.visibleChunks.TryGetValue(chunkPosition, out var timeStamp1))
-                        {
-                            if (chunk1 != null && chunk1.stamp > timeStamp1)
-                            {
-                                player.visibleChunks[chunkPosition] = chunk1.stamp;
-                                chunk1.DelaySend(player.currentUser);
-                            }
-                        }
-                        else if (chunk1 != null)
+                        player.visibleChunks.TryGetValue(chunkPosition, out var timeStamp1);
+                        if (chunk1 != null && chunk1.stamp > timeStamp1)
                         {
                             player.visibleChunks[chunkPosition] = chunk1.stamp;
                             chunk1.DelaySend(player.currentUser);

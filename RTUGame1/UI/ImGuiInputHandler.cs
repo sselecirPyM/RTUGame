@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using RTUGame1.Interoperation;
 
-namespace RTUGame1
+namespace RTUGame1.UI
 {
     public class ImGuiInputHandler
     {

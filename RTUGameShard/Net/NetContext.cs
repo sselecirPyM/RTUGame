@@ -24,14 +24,13 @@ using System.Text;
 using System.Threading;
 using RTUGame.Collections;
 
-namespace RTUGameServer.Net
+namespace RTUGame.Net
 {
     public class NetContext
     {
         public FlipList<NetPack> receivedBlocks = new FlipList<NetPack>();
         public AutoResetEvent receiveEvent = new AutoResetEvent(false);
-        public AutoResetEvent sendEvent = new AutoResetEvent(false);
-        public CancellationTokenSource m_stopAll = new CancellationTokenSource();
+        public CancellationTokenSource cancel = new CancellationTokenSource();
 
         public NetPack GetNetBlock(int header, int size)
         {
@@ -123,10 +122,10 @@ namespace RTUGameServer.Net
 
         public void SendCompressed(int header, byte[] data, int offset, int size)
         {
-            int length2 = LZ4Codec.Encode(new Span<byte>(data, offset, size), new Span<byte>(m_sendBuffer, 8, 65528));
-            BitConverter.TryWriteBytes(new Span<byte>(m_sendBuffer, 4, 4), length2);
+            int encLength = LZ4Codec.Encode(new Span<byte>(data, offset, size), new Span<byte>(m_sendBuffer, 8, 65528));
+            BitConverter.TryWriteBytes(new Span<byte>(m_sendBuffer, 4, 4), encLength);
             BitConverter.TryWriteBytes(new Span<byte>(m_sendBuffer, 0, 4), header);
-            socket.Send(m_sendBuffer, length2 + 8, SocketFlags.None);
+            socket.Send(m_sendBuffer, encLength + 8, SocketFlags.None);
         }
     }
 }

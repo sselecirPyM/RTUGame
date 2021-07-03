@@ -10,13 +10,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Chunk.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FlipList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NetExt.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Net\NetContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Transform.cs" />
     <Compile Include="..\RTUGameShard\Net\NetPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Node444.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorExt.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Net\" />
   </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ namespace RTUGameServer.Utility
         }
         public static void DelaySend(this Chunk chunk, User user)
         {
-            if (user.netPacks.Count < 64)
+            if (user.netPacks.Count < 8192)
             {
                 NetPack netPack = user.netContext.GetNetBlock((int)NetMessageType.Chunk, Chunk.c_minimumSize);
                 chunk.ToNetBlock(netPack);

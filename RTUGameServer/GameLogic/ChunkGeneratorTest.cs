@@ -24,9 +24,9 @@ namespace RTUGameServer.GameLogic
 {
     public class ChunkGeneratorTest : IChunkGenerator
     {
-        public Chunk GetChunk(int x, int y, int z, GameWorld gameContext)
+        public Chunk GetChunk(int x, int y, int z, World world)
         {
-            Chunk chunk = gameContext.GetChunk(x, y, z);
+            Chunk chunk = world.GetChunk(x, y, z);
             if (chunk != null)
             {
                 return chunk;
@@ -46,6 +46,7 @@ namespace RTUGameServer.GameLogic
                 return null;
 
             chunk = new Chunk();
+            chunk.stamp = 1;
             chunk.position = new Int3(x,y,z);
             for (int rz = 0; rz < 16; rz++)
                 for (int ry = 0; ry < 16; ry++)
@@ -64,11 +65,11 @@ namespace RTUGameServer.GameLogic
                         }
                     }
 
-            gameContext.chunks[new Int3(x, y, z)] = chunk;
+            world.chunks[new Int3(x, y, z)] = chunk;
             return chunk;
         }
 
-        public void FillRegion(int x, int z, GameWorld gameContext)
+        public void FillRegion(int x, int z, World gameContext)
         {
             Int2 position = new Int2(x, z);
             for (int i = -2; i < 4; i++)
@@ -80,7 +81,7 @@ namespace RTUGameServer.GameLogic
             gameContext.regionInfos[position] = regionInfo;
         }
 
-        public RegionInfo GetRegionInfo(int x, int z, GameWorld gameContext)
+        public RegionInfo GetRegionInfo(int x, int z, World gameContext)
         {
             RegionInfo regionInfo = new RegionInfo();
             regionInfo.m_minHeight = -32;

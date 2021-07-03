@@ -20,7 +20,7 @@ namespace RTUGame1.RenderPipeline
 
         PSODesc psoDesc = new PSODesc
         {
-            CullMode = CullMode.None,
+            CullMode = Vortice.Direct3D12.CullMode.None,
             RenderTargetFormat = Format.R8G8B8A8_UNorm,
             RenderTargetCount = 1,
             PrimitiveTopologyType = PrimitiveTopologyType.Triangle,
@@ -37,7 +37,7 @@ namespace RTUGame1.RenderPipeline
             fontTexture = new Texture2D();
             context.renderTargets["imgui_font"] = fontTexture;
 
-            //ImFontPtr font = io.Fonts.AddFontFromFileTTF("c:\\Windows\\Fonts\\SIMHEI.ttf", 14, null, io.Fonts.GetGlyphRangesChineseFull());
+            ImFontPtr font = io.Fonts.AddFontFromFileTTF("c:\\Windows\\Fonts\\SIMHEI.ttf", 14, null, io.Fonts.GetGlyphRangesChineseFull());
 
             io.Fonts.GetTexDataAsRGBA32(out byte* pixels, out int width, out int height, out int bytesPerPixel);
             io.Fonts.TexID = context.GetStringId("imgui_font");
@@ -61,6 +61,7 @@ namespace RTUGame1.RenderPipeline
         {
             ImGui.NewFrame();
             ImGui.ShowDemoWindow();
+            UI.UIImGui.Render();
             ImGui.Render();
             var data = ImGui.GetDrawData();
             GraphicsContext graphicsContext = context.graphicsContext;

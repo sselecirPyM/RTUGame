@@ -22,8 +22,8 @@ namespace RTUGameServer.GameLogic
 {
     public interface IChunkGenerator
     {
-        public Chunk GetChunk(int x, int y, int z, GameWorld gameContext);
-        public void FillRegion(int x, int z, GameWorld gameContext);
-        public RegionInfo GetRegionInfo(int x, int y, GameWorld gameContext);
+        public Chunk GetChunk(int x, int y, int z, World gameContext);
+        public void FillRegion(int x, int z, World gameContext);
+        public RegionInfo GetRegionInfo(int x, int y, World gameContext);
     }
 }

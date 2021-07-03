@@ -26,7 +26,7 @@ namespace RTUGame.Net
             length = data1.Length;
             data1.CopyTo(data);
         }
-        public NetPack(int header,int size)
+        public NetPack(int header, int size)
         {
             this.header = header;
             data = new byte[size];

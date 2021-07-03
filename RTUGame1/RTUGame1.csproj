@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Net\" />
     <Folder Include="ResourcesManage\" />
     <Folder Include="Interoperation\" />
     <Folder Include="RenderPipeline\" />
@@ -22,6 +23,7 @@
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.78.0" />
     <PackageReference Include="K4os.Compression.LZ4" Version="1.2.6" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     <PackageReference Include="Vortice.Direct3D12" Version="1.9.65" />
     <PackageReference Include="Vortice.Dxc" Version="1.9.65" />
   </ItemGroup>

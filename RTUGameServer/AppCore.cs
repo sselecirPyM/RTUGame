@@ -37,7 +37,7 @@ namespace RTUGameServer
         public Thread connectServiceThread;
         public Socket serverSocket;
         public ManualResetEvent connectServiceThreadBlock = new ManualResetEvent(true);
-        public GameWorld world;
+        public World world;
 
         public void Initialize(string[] args)
         {
@@ -49,7 +49,7 @@ namespace RTUGameServer
 
         public void LaunchBaseService()
         {
-            world = new GameWorld();
+            world = new World();
             world.DefaultSettings();
             //world.Save(System.IO.File.OpenWrite("test.zip"));
             Task.Factory.StartNew(world.GameService, TaskCreationOptions.LongRunning);
